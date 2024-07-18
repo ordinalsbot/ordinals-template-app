@@ -1,0 +1,7 @@
+{
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.stickyTabStops": false,
+    "editor.tabSize": 2,
+    "scssFormatter.singleQuote": true
+}

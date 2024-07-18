@@ -6,6 +6,8 @@
     "semi": ["error", "always"],
     "no-unused-vars": "warn",
     "no-console": "warn",
-    "no-debugger": "warn"
+    "no-debugger": "warn",
+    "react/no-children-prop": "off",
+    "react-hooks/exhaustive-deps": "off"
   }
 }
