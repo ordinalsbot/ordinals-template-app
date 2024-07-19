@@ -1,8 +1,51 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+# Overview
+
+This repository is a boilerplate codebase for building a frontend application that interfaces with the Bitcoin Ordinals ecosystem. Out of the box, this application comes with the following technologies.
+
+## Authentication & Data Storage
+
+The application uses Firebase as a SSO and Database resource. After adding Firebase configurations to the project, users will receive an Anonymous account by signing a message with their sats-connect wallet.
+
+In the background, this repository implements Next-Auth with sessions, creating a "customAuthenticationToken" with the use of the Firebase admin SDK.
+
+## Utilities
+
+### SatsConnect
+
+Sats Connect is a library for interacting with Bitcoin Wallets that have implemented the sats-connect library. It is the easiest and most streamlined library for enabling the widest array of browser-based bitcoin wallets.
+
+### kBar
+
+TBD
+
+## Design
+
+
+
+##
+
+##
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies with your preferred node package manager (we recommend `pnpm`).
+
+### Install
+
+```bash
+npm i
+# or
+yarn i
+# or
+pnpm i
+
+```
+
+### Configure
+
+
+### Run
 
 ```bash
 npm run dev
@@ -38,12 +81,13 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 To hook up your Firebase project to this applcation, follow these steps.
 
-
 ### Initialization
+
 1. Go to firebase.google.com and start a new project
 2. Follow the prompts, naming your project and selecting the elements of firebase you wish to use (e.g. Analytics)
 
 ### Authentication
+
 This template assumes that you wish to make use of an account and authentication system. By default, the only login method established in this template is anonymous login through the issuance of a custom authentication token after the user has signed a message with their connected wallet. In order to enable anonymous login, visit the Authentication service in Firebase and click through the prompts to finish the setup.
 
 Turn on "Anonymous" authentication after completing the setup.

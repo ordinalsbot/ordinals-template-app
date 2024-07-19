@@ -19,6 +19,7 @@ export default async function RootLayout({
   metadata: Metadata
 }>) {
   const session = await getServerSession(authOptions);
+  
   return (
     <html lang='en' suppressHydrationWarning>
       <body className={font.className}>
