@@ -4,6 +4,7 @@ import * as v from 'valibot';
 import FieldInfo from '../common/FieldInfo';
 import { auth } from '@/lib/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { Button } from '@/components/ui/button';
 
 const signInFormSchema = v.required(
   v.object({
@@ -56,60 +57,64 @@ export default function SignUp () {
         form.handleSubmit();
       }}
     >
-      <form.Field
-        name='email'
-        children={(field) => {
-          const { name, state, handleBlur, handleChange } = field;
-          return (
-            <>
-              <label htmlFor={name}>{name}</label>
-              <input
-                className='font-black'
-                id={name}
-                name={name}
-                value={state.value}
-                onBlur={handleBlur}
-                onChange={(e) => handleChange(e.target.value)}
-              />
-              <FieldInfo field={field} />
-            </>
-          );
-        }}
-      />
+      <div className='flex flex-col gap-1'>
+        
+        <form.Field
+          name='email'
+          children={(field) => {
+            const { name, state, handleBlur, handleChange } = field;
+            return (
+              <div className='flex flex-row justify-between gap-2'>
+                <label className='uppercase' htmlFor={name}>{name}</label>
+                <input
+                  className='font-black ring-1'
+                  id={name}
+                  name={name}
+                  value={state.value}
+                  onBlur={handleBlur}
+                  onChange={(e) => handleChange(e.target.value)}
+                />
+                <FieldInfo field={field} />
+              </div>
+            );
+          }}
+        />
 
-      <form.Field
-        name='password'
-        children={(field) => {
-          const { name, state, handleBlur, handleChange } = field;
-          return (
-            <>
-              <label htmlFor={name}>{name}</label>
-              <input
-                id={name}
-                className='font-black'
-                type='password'
-                name={name}
-                value={state.value}
-                onBlur={handleBlur}
-                onChange={(e) => handleChange(e.target.value)}
-              />
-              <FieldInfo field={field} />
-            </>
-          );
-        }}
-      />
-      <form.Subscribe
-        selector={(state) => [state.canSubmit, state.isSubmitting]}
-        children={([canSubmit, isSubmitting]) => (
-          <button
-            type='submit'
-            disabled={!canSubmit || isSubmitting}
-            className='bg-blue-600 py-2 px-6 rounded-md'
-          >
+        <form.Field
+          name='password'
+          children={(field) => {
+            const { name, state, handleBlur, handleChange } = field;
+            return (
+              <div className='flex flex-row justify-between gap-2'>
+                <label className='uppercase' htmlFor={name}>{name}</label>
+                <input
+                  id={name}
+                  className='font-black ring-1'
+                  type='password'
+                  name={name}
+                  value={state.value}
+                  onBlur={handleBlur}
+                  onChange={(e) => handleChange(e.target.value)}
+                />
+                <FieldInfo field={field} />
+              </div>
+            );
+          }}
+        />
+          
+        <form.Subscribe
+          selector={(state) => [state.canSubmit, state.isSubmitting]}
+          children={([canSubmit, isSubmitting]) => (
+            <Button
+              type='submit'
+              disabled={!canSubmit || isSubmitting}
+              className='bg-blue-600 py-2 px-6 rounded-md'
+            >
                 Sign Up
-          </button>
-        )}
-      />
+            </Button>
+          )}
+        />
+      </div>
     </form>
   );
 };
