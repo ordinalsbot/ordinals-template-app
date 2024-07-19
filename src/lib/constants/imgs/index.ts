@@ -1,4 +1,5 @@
 import BTC from '/public/img/btc.svg';
+import FIREBASE from '/public/img/firebase.svg';
 
 const DEFAULT_DIMENSIONS = {
   width: 50,
@@ -6,5 +7,7 @@ const DEFAULT_DIMENSIONS = {
 };
 
 export {
-  BTC, DEFAULT_DIMENSIONS
+  BTC, 
+  FIREBASE,
+  DEFAULT_DIMENSIONS
 };
