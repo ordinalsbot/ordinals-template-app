@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 export * from './imgs';
 export * from './time';
 
-const APP_NAME = 'Ordinals Template App';
+export const APP_NAME = 'Ordinals Template App';
 const CLEAN_APP_NAME = APP_NAME.replace(/ /g, '-').toLowerCase();
 
 export const DEFAULT_METADATA: Metadata = {

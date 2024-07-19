@@ -64,7 +64,7 @@ export default function SignUp () {
             <>
               <label htmlFor={name}>{name}</label>
               <input
-                style={{ color: 'black' }}
+                className='font-black'
                 id={name}
                 name={name}
                 value={state.value}
@@ -85,8 +85,8 @@ export default function SignUp () {
             <>
               <label htmlFor={name}>{name}</label>
               <input
-                style={{ color: 'black' }}
                 id={name}
+                className='font-black'
                 type='password'
                 name={name}
                 value={state.value}

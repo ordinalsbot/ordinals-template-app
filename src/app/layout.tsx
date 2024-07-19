@@ -6,6 +6,7 @@ import { DEFAULT_METADATA } from '@/lib/constants';
 import Providers from './providers';
 import { getServerSession } from 'next-auth';
 import { authOptions } from './api/auth/[...nextauth]/route';
+import Footer from '@/components/Footer';
 
 const font = Roboto_Mono({ subsets: ['latin']});
 
@@ -19,11 +20,12 @@ export default async function RootLayout({
 }>) {
   const session = await getServerSession(authOptions);
   return (
-    <html lang='en'>
+    <html lang='en' suppressHydrationWarning>
       <body className={font.className}>
         <Providers session={session}>
           <Header />
           {children}
+          <Footer />
         </Providers>
       </body>
     </html>
