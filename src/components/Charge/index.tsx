@@ -8,13 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Loading } from '../forms/common';
+import Loading from '@/components/Loading';
 import { satsToBitcoin, shortenAddress } from '@/lib/utilities';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import Wallet, { RpcErrorCode } from 'sats-connect';
 import { toast } from 'sonner';
+import { RecommendedFees } from 'ordinalsbot/dist/types/mempool_types';
 
-export default function Charge({ charge, loading }: { charge: DirectInscriptionCharge | null | undefined, loading: boolean }) {
+export default function Charge({ charge, loading, feeRate }: { charge: DirectInscriptionCharge | null | undefined, loading: boolean, feeRate: RecommendedFees }) {
   
   const pay = async () => {
     if (!charge) return;
@@ -57,7 +58,12 @@ export default function Charge({ charge, loading }: { charge: DirectInscriptionC
 
         <div className='flex flex-row justify-between items-center'>
           <span>Payment Address: </span>
-          <span>{ shortenAddress(charge.address) }</span>
+          <span>{ charge.address ? shortenAddress(charge.address) : <Loading /> }</span>
+        </div>
+
+        <div className='flex flex-row justify-between items-center'>
+          <span>Fee Rate: </span>
+          <span>{feeRate.fastestFee} sats/vybte</span>
         </div>
 
       </CardContent>

@@ -36,7 +36,7 @@ export default function Inscribe() {
   const [loading, setLoading] = useState(false);
   const [order, setOrder] = useState<DirectInscriptionOrder | null>(null);
 
-  const { data, error, isFetching } = useQuery({
+  const { data, error, isLoading } = useQuery({
     queryFn: async () => {
       return ordinalsbot.Inscription().getOrder(order?.id!);
     },
@@ -50,8 +50,15 @@ export default function Inscribe() {
     }
   });
 
+  const { data: feeRate, isLoading: feeRateLoading, error: feeRateError } = useQuery(
+    {
+      queryFn: async () => fetch('/api/feeRate').then(res => res.json()),
+      queryKey: ['feeRate']
+    }
+  );
+
   useEffect(() => {
-    if (isFetching) return;
+    if (isLoading) return;
     setOrder(data as DirectInscriptionOrder);
   }, [data]);
 
@@ -60,6 +67,12 @@ export default function Inscribe() {
       file: null,
     },
     onSubmit: async ({ value }: { value: TDirectInscribeForm}) => {
+
+      if (
+        (loading || error) ||
+        (feeRateLoading || feeRateError)
+      ) return; // Don't submit if we're loading or have an error
+
       try {
         v.parse(directInscribeSchema, value);
       } catch (err: any) {
@@ -70,6 +83,11 @@ export default function Inscribe() {
       if (!value.file) {
         setLoading(false);
         return toast.error('Please select a file');
+      }
+
+      if (!wallet?.ordinalsAddress) {
+        setLoading(false);
+        return toast.error('Please connect a wallet');
       }
 
       const { file } = value;
@@ -91,7 +109,7 @@ export default function Inscribe() {
             name, size, type
           }],
           lowPostage: USE_LOW_POSTAGE,
-          fee: 8,
+          fee: feeRate?.fastestFee,
           receiveAddress: wallet?.ordinalsAddress
         });
 
@@ -141,17 +159,21 @@ export default function Inscribe() {
           />
 
           <div className='flex flex-row justify-end mt-5'>
-            <Button type='submit' disabled={loading}>Inscribe { loading && <LoaderPinwheel className='animate-spin' /> }</Button>
+            <Button type='submit' disabled={loading || feeRateLoading}>Inscribe { loading && <LoaderPinwheel className='animate-spin' /> }</Button>
           </div>
         </form>
       </div>
 
       <div className='w-1/3'>
-        <Order loading={isFetching} order={order} />
+        <Order loading={isLoading} order={order} />
       </div>
 
       <div className='w-1/3'>
-        <Charge loading={isFetching} charge={order?.charge} />
+        <Charge 
+          loading={isLoading} 
+          charge={order?.charge}
+          feeRate={feeRate}
+        />
       </div>
 
       {
