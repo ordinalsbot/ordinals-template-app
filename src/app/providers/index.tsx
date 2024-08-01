@@ -22,8 +22,7 @@ const Providers: FC<ProvidersProps> = ({ children, session }) => {
     defaultOptions: {
       queries: {
         refetchOnMount: false,
-        refetchOnReconnect: true,
-        staleTime: ONE_MINUTE.seconds / 30,
+        refetchOnReconnect: true
       },
     },
   }));
