@@ -8,6 +8,7 @@ import { getServerSession } from 'next-auth';
 
 import Footer from '@/components/Footer';
 import { authOptions } from '@/lib/auth';
+import { Toaster } from 'sonner';
 
 const font = Roboto_Mono({ subsets: ['latin']});
 
@@ -28,6 +29,7 @@ export default async function RootLayout({
           <Header />
           {children}
           <Footer />
+          <Toaster richColors />
         </Providers>
       </body>
     </html>

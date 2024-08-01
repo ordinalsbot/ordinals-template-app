@@ -26,6 +26,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.51.5
         version: 5.51.5(react@18.3.1)
+      '@tanstack/react-query-devtools':
+        specifier: ^5.51.16
+        version: 5.51.16(@tanstack/react-query@5.51.5(react@18.3.1))(react@18.3.1)
       '@tanstack/valibot-form-adapter':
         specifier: ^0.26.4
         version: 0.26.4(valibot@0.36.0)
@@ -65,6 +68,9 @@ importers:
       ordinalsbot:
         specifier: ^0.2.10
         version: 0.2.10(typescript@5.5.3)
+      qs:
+        specifier: ^6.12.3
+        version: 6.12.3
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -74,6 +80,9 @@ importers:
       sats-connect:
         specifier: ^2.5.0
         version: 2.5.0(typescript@5.5.3)(valibot@0.36.0)
+      sonner:
+        specifier: ^1.5.0
+        version: 1.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       tailwind-merge:
         specifier: ^2.4.0
         version: 2.4.0
@@ -1551,6 +1560,9 @@ packages:
   '@tanstack/query-core@5.51.5':
     resolution: {integrity: sha512-qovOto6hFet2zA4Pf3cDO+qkOqskO6xP39PlKnr6YKPtjRsePWyZnTaMf59+VnlOLY8gpku1I4WPC4dqBXo4FQ==}
 
+  '@tanstack/query-devtools@5.51.16':
+    resolution: {integrity: sha512-ajwuq4WnkNCMj/Hy3KR8d3RtZ6PSKc1dD2vs2T408MdjgKzQ3klVoL6zDgVO7X+5jlb5zfgcO3thh4ojPhfIaw==}
+
   '@tanstack/react-form@0.26.4':
     resolution: {integrity: sha512-kKZ6IwP4CQs4i8yNqnoK99mo+XColct6eoPOwGTqkhVvcKqjNb/rDzFYWMgNOXSxfO0JGeayOoDj0HwqlKjhJg==}
     peerDependencies:
@@ -1559,6 +1571,12 @@ packages:
     peerDependenciesMeta:
       '@tanstack/start':
         optional: true
+
+  '@tanstack/react-query-devtools@5.51.16':
+    resolution: {integrity: sha512-nX/LeBMba9S9/kKfOrPDUiBXkpc5To8JbssABOadukPB093SF8+NdSO5/2RY72aE0pBwaru2THyM4WX5rEnuAw==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.51.16
+      react: ^18 || ^19
 
   '@tanstack/react-query@5.51.5':
     resolution: {integrity: sha512-jaYYPGF55HT3DSV2NxFHa7zGRUm6LiRENw1rspkzqNiOU93umP5YCdE/l4S61/ZdLnjzwYIM4FU96EQt+imq5Q==}
@@ -3526,6 +3544,10 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
+  qs@6.12.3:
+    resolution: {integrity: sha512-AWJm14H1vVaO/iNZ4/hO+HyaTehuy9nRqVdkTqlJt0HWvBiBIEXFmb4C0DGeYo3Xes9rrEW+TxHsaigCbN5ICQ==}
+    engines: {node: '>=0.6'}
+
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
@@ -3754,6 +3776,12 @@ packages:
 
   smob@1.5.0:
     resolution: {integrity: sha512-g6T+p7QO8npa+/hNx9ohv1E5pVCmWrVCUzUXJyLdMmftX6ER0oiWY/w9knEonLpnOp6b6FenKnMfR8gqwWdwig==}
+
+  sonner@1.5.0:
+    resolution: {integrity: sha512-FBjhG/gnnbN6FY0jaNnqZOMmB73R+5IiyYAw8yBj7L54ER7HB3fOSE5OFiQiE2iXWxeXKvg6fIP4LtVppHEdJA==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
 
   source-list-map@2.0.1:
     resolution: {integrity: sha512-qnQ7gVMxGNxsiL4lEuJwe/To8UnK7fAnmbGEEH8RpLouuKbeEm0lhbQVFIrNSuB+G7tVrAlVsZgETT5nljf+Iw==}
@@ -6059,6 +6087,8 @@ snapshots:
 
   '@tanstack/query-core@5.51.5': {}
 
+  '@tanstack/query-devtools@5.51.16': {}
+
   '@tanstack/react-form@0.26.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.3)':
     dependencies:
       '@remix-run/node': 2.10.3(typescript@5.5.3)
@@ -6069,6 +6099,12 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
       - typescript
+
+  '@tanstack/react-query-devtools@5.51.16(@tanstack/react-query@5.51.5(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@tanstack/query-devtools': 5.51.16
+      '@tanstack/react-query': 5.51.5(react@18.3.1)
+      react: 18.3.1
 
   '@tanstack/react-query@5.51.5(react@18.3.1)':
     dependencies:
@@ -8437,6 +8473,10 @@ snapshots:
 
   punycode@2.3.1: {}
 
+  qs@6.12.3:
+    dependencies:
+      side-channel: 1.0.6
+
   queue-microtask@1.2.3: {}
 
   randombytes@2.1.0:
@@ -8704,6 +8744,11 @@ snapshots:
   slash@3.0.0: {}
 
   smob@1.5.0: {}
+
+  sonner@1.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   source-list-map@2.0.1: {}
 
