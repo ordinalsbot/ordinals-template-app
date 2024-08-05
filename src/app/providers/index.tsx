@@ -11,6 +11,7 @@ import { ThemeProvider } from 'next-themes';
 import AuthContextProvider from './AuthContext';
 
 import { ONE_MINUTE } from '@/lib/constants';
+import { LaserEyesProvider, MAINNET } from '@omnisat/lasereyes';
 
 interface ProvidersProps {
   children: NonNullable<ReactNode>;
@@ -33,19 +34,20 @@ const Providers: FC<ProvidersProps> = ({ children, session }) => {
       defaultTheme='system'
       enableSystem
     >
-      
-      <SessionProvider 
-        session={session}
-        refetchInterval={5  * ONE_MINUTE.seconds}
-        refetchOnWindowFocus={true}
-      >
-        <QueryClientProvider client={client}>
-          <AuthContextProvider>
-            {children}
-          </AuthContextProvider>
-          <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
-      </SessionProvider>
+      <LaserEyesProvider config={{ network: MAINNET }}>
+        <SessionProvider 
+          session={session}
+          refetchInterval={5  * ONE_MINUTE.seconds}
+          refetchOnWindowFocus={true}
+        >
+          <QueryClientProvider client={client}>
+            <AuthContextProvider>
+              {children}
+            </AuthContextProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+          </QueryClientProvider>
+        </SessionProvider>
+      </LaserEyesProvider>
     </ThemeProvider>
   );
 };

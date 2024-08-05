@@ -6,7 +6,6 @@ import { auth } from '@/lib/firebase';
 import { WALLET_COOKIE } from '@/lib/constants';
 import { useRouter } from 'next/navigation';
 
-
 export const AuthContext = createContext<IAuthContext>({} as any);
 
 const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> }) => {
