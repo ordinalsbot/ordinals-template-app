@@ -12,8 +12,8 @@ importers:
         specifier: ^10.2.7
         version: 10.2.7(next@14.2.4(@babel/core@7.24.8)(@playwright/test@1.45.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(webpack@5.93.0)
       '@omnisat/lasereyes':
-        specifier: ^0.0.21
-        version: 0.0.21(typescript@5.5.3)
+        specifier: ^0.0.32
+        version: 0.0.32(typescript@5.5.3)
       '@radix-ui/react-dropdown-menu':
         specifier: ^2.1.1
         version: 2.1.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1192,8 +1192,8 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@omnisat/lasereyes@0.0.21':
-    resolution: {integrity: sha512-/l3eGW9GVx26FYa+xsmMWGqAAgK572CKLXU7V5LwzgQ9HqUcPI2ghrs+MxkSzunzXivCjZN6kpc8hZrpz59woA==}
+  '@omnisat/lasereyes@0.0.32':
+    resolution: {integrity: sha512-1QdWGXQYnTob1Bpbe22PBfE7EKFAumMlTjB68RmyvBmffEm18gtZlZizstmEZSSVZFaHaGH7ZuO4hJcruy1bew==}
 
   '@panva/hkdf@1.2.1':
     resolution: {integrity: sha512-6oclG6Y3PiDFcoyk8srjLfVKyMfVCKJ27JwNPViuXziFpmdz+MZnZN/aKY0JGXgYuO/VghU0jcOAZgWXZ1Dmrw==}
@@ -6116,7 +6116,7 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
 
-  '@omnisat/lasereyes@0.0.21(typescript@5.5.3)':
+  '@omnisat/lasereyes@0.0.32(typescript@5.5.3)':
     dependencies:
       '@bitcoinerlab/secp256k1': 1.1.1
       '@changesets/cli': 2.27.7
