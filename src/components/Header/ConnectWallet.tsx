@@ -2,7 +2,7 @@
 import { AuthContext } from '@/app/providers/AuthContext';
 import { WALLET_SIGN_IN_MESSAGE } from '@/lib/constants';
 import { auth } from '@/lib/firebase';
-import { UNISAT, XVERSE, MAGIC_EDEN, useLaserEyes } from '@omnisat/lasereyes';
+import { UNISAT, XVERSE, MAGIC_EDEN, LEATHER, useLaserEyes } from '@omnisat/lasereyes';
 import { signInWithCustomToken } from 'firebase/auth';
 import { signIn } from 'next-auth/react';
 import { useContext, useEffect } from 'react';
@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '../ui/button';
-import { UNISAT as unisatLogo, MAGIC_EDEN as magicEdenLogo, XVERSE as xVerseLogo } from '@/lib/constants/imgs';
+import { UNISAT as unisatLogo, MAGIC_EDEN as magicEdenLogo, XVERSE as xVerseLogo, LEATHER as leatherLogo } from '@/lib/constants/imgs';
 import type { SUPPORTED_WALLETS } from '@/app/providers/AuthContext/auth.types';
 import { shortenAddress } from '@/lib/utilities';
 import { useRouter } from 'next/navigation';
@@ -23,6 +23,7 @@ const WalletProviderConfig: { [key in SUPPORTED_WALLETS]: {
   logo: StaticImageData;
 }} = {
   [UNISAT]: { logo: unisatLogo },
+  [LEATHER]: { logo: leatherLogo },
   [XVERSE]: { logo: xVerseLogo },
   [MAGIC_EDEN]: { logo: magicEdenLogo }
 };
@@ -64,8 +65,6 @@ export default function ConnectWallet () {
 
       // Use the custom token to authenticate with Firebase
       try {
-        console.log('----- signIntoFirebase(2)');
-        console.log(auth, customToken);
         await signInWithCustomToken(auth, customToken);
 
         const idToken = await auth.currentUser?.getIdToken(true);
@@ -85,7 +84,7 @@ export default function ConnectWallet () {
       return false;
     }
   };
- 
+  
   useEffect(() => {
     if (connected && !auth.currentUser) {
       const connect = async (wallet: SUPPORTED_WALLETS) => {
@@ -128,6 +127,7 @@ export default function ConnectWallet () {
       <DropdownMenuContent align='end'>
         {
           !connected && Object.entries(WalletProviderConfig).map(([key, value]) => (key !== UNISAT || (key === UNISAT && hasUnisat)) && (
+            // @ts-ignore - Supported Wallets are the keys of the WalletProviderConfig object
             <DropdownMenuItem key={key} onClick={() => connect(key as SUPPORTED_WALLETS)}>
               <div className='flex items-center space-x-2'>
                 <Image src={value.logo} alt={`${key} wallet logo`} width={24} height={24} />

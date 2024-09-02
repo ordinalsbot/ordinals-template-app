@@ -18,5 +18,6 @@ export interface IAuthContext {
 export enum SUPPORTED_WALLETS {
   UNISAT = 'unisat',
   XVERSE = 'xverse',
-  MAGIC_EDEN = 'magic-eden'
-}
+  MAGIC_EDEN = 'magic-eden',
+  LEATHER = 'leather'
+};
