@@ -1,4 +1,5 @@
 import { ONE_BITCOIN } from '../constants';
+export * from './network';
 
 
 export const shortenString = (str: string, firstAmount: number, lastAmount: number) => {

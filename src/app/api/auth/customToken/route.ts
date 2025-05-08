@@ -1,13 +1,13 @@
 import { Verifier } from 'bip322-js';
 import admin from '@/app/api/firebase';
+import { WALLET_SIGN_IN_MESSAGE } from '@/lib/constants';
 
-const MESSAGE = 'Sign into NextJS Ordinals Application';
 
 export async function POST(req: Request) {
   try {
     const { address, signature } = await req.json();
     // verifySignature requires that the entire signature object be passed to it
-    const signedResult = Verifier.verifySignature(address, MESSAGE, signature);
+    const signedResult = Verifier.verifySignature(address, WALLET_SIGN_IN_MESSAGE, signature);
 
     if (signedResult) {
       const customToken = await admin.auth().createCustomToken(encodeBitcoinAddressToBase64(address));
