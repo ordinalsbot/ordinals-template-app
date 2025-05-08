@@ -1,22 +1,22 @@
-
+import { RecommendedFees } from 'ordinalsbot/dist/types/mempool_types';
 import type { DirectInscriptionCharge } from 'ordinalsbot/dist/types/v1';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import Loading from '@/components/Loading';
-import { satsToBitcoin, shortenAddress } from '@/lib/utilities';
-import { Button } from '@/components/ui/button';
 import Wallet, { RpcErrorCode } from 'sats-connect';
 import { toast } from 'sonner';
-import { RecommendedFees } from 'ordinalsbot/dist/types/mempool_types';
 
-export default function Charge({ charge, loading, feeRate }: { charge: DirectInscriptionCharge | null | undefined, loading: boolean, feeRate: RecommendedFees }) {
-  
+import Loading from '@/components/Loading';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { satsToBitcoin, shortenAddress } from '@/lib/utilities';
+
+export default function Charge({
+  charge,
+  loading,
+  feeRate
+}: {
+  charge: DirectInscriptionCharge | null | undefined;
+  loading: boolean;
+  feeRate: RecommendedFees;
+}) {
   const pay = async () => {
     if (!charge) return;
     try {
@@ -24,8 +24,8 @@ export default function Charge({ charge, loading, feeRate }: { charge: DirectIns
         recipients: [
           {
             address: charge.address,
-            amount: charge.amount,
-          },
+            amount: charge.amount
+          }
         ]
       });
       if (response.status === 'success') {
@@ -44,32 +44,32 @@ export default function Charge({ charge, loading, feeRate }: { charge: DirectIns
       toast.error(err.error.message);
     }
   };
-  
+
   if (loading) return <Loading />;
   if (!charge) return null;
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{ satsToBitcoin(charge.amount) } ₿</CardTitle>
+        <CardTitle>{satsToBitcoin(charge.amount)} ₿</CardTitle>
         <CardDescription>{charge.amount} sats</CardDescription>
       </CardHeader>
       <CardContent>
-
-        <div className='flex flex-row justify-between items-center'>
+        <div className='flex flex-row items-center justify-between'>
           <span>Payment Address: </span>
-          <span>{ charge.address ? shortenAddress(charge.address) : <Loading /> }</span>
+          <span>{charge.address ? shortenAddress(charge.address) : <Loading />}</span>
         </div>
 
-        <div className='flex flex-row justify-between items-center'>
+        <div className='flex flex-row items-center justify-between'>
           <span>Fee Rate: </span>
           <span>{feeRate.fastestFee} sats/vybte</span>
         </div>
-
       </CardContent>
       <CardFooter>
-        <div className='flex flex-row justify-end w-full'>
-          <Button className='bg-green-700 hover:bg-green-600' onClick={pay} disabled={!charge.address}>Pay Now</Button>
+        <div className='flex w-full flex-row justify-end'>
+          <Button className='bg-green-700 hover:bg-green-600' onClick={pay} disabled={!charge.address}>
+            Pay Now
+          </Button>
         </div>
       </CardFooter>
     </Card>

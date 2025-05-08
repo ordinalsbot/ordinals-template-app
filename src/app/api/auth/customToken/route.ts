@@ -1,7 +1,7 @@
 import { Verifier } from 'bip322-js';
+
 import admin from '@/app/api/firebase';
 import { WALLET_SIGN_IN_MESSAGE } from '@/lib/constants';
-
 
 export async function POST(req: Request) {
   try {

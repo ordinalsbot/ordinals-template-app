@@ -2,37 +2,37 @@
 
 import { useLaserEyes } from '@omnisat/lasereyes';
 import { User, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
-import { signOut, signIn } from 'next-auth/react';
+import { signIn, signOut } from 'next-auth/react';
 import { ReactNode, createContext, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { WALLET_SIGN_IN_MESSAGE } from '@/lib/constants';
-import { auth } from '@/lib/firebase';
-import { IAuthContext, IWallet } from './auth.types';
 import { WALLET_COOKIE } from '@/lib/constants';
+import { auth } from '@/lib/firebase';
+
+import { IAuthContext, IWallet } from './auth.types';
 
 export const AuthContext = createContext<IAuthContext>({} as any);
 
 const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> }) => {
-    const {
-      connected,
-      address,
-      publicKey,
-      signMessage,
-      paymentAddress,
-      paymentPublicKey,
-      provider,
-      isInitializing,
-      isConnecting,
-      disconnect,
-    } = useLaserEyes();
+  const {
+    connected,
+    address,
+    publicKey,
+    signMessage,
+    paymentAddress,
+    paymentPublicKey,
+    provider,
+    isInitializing,
+    isConnecting,
+    disconnect
+  } = useLaserEyes();
 
-    const listeners = useRef<(() => void)[]>([]);
+  const listeners = useRef<(() => void)[]>([]);
 
-    const [loading, setLoading] = useState<boolean>(true);
-    const [wallet, setWallet] = useState<IWallet | null>(null);
-    const isAuthenticated = useMemo(() => (auth?.currentUser ? true : false), [auth.currentUser]);
-
+  const [loading, setLoading] = useState<boolean>(true);
+  const [wallet, setWallet] = useState<IWallet | null>(null);
+  const isAuthenticated = useMemo(() => (auth?.currentUser ? true : false), [auth.currentUser]);
 
   const logIn = () => {
     setWallet({
@@ -139,7 +139,6 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
     }
   }, [connected, isInitializing, loading, isConnecting]);
 
-
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, authStateChanged);
 
@@ -153,7 +152,6 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
 
   const authStateChanged = async (firebaseUser: User | null) => {
     if (firebaseUser) {
-      
       // TODO: Load user data from RTDB or Firestore
 
       const localWallet = JSON.parse(localStorage.getItem(WALLET_COOKIE) || 'null');
@@ -163,7 +161,6 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
       }
 
       setLoading(false);
-
     } else {
       logOut();
       setLoading(false);
@@ -173,7 +170,7 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, authStateChanged);
     return () => unsubscribe();
-  }, []);  
+  }, []);
 
   return (
     <AuthContext.Provider
@@ -181,7 +178,7 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
         isAuthenticated,
         logOut,
         loading,
-        wallet,
+        wallet
       }}
     >
       {children}

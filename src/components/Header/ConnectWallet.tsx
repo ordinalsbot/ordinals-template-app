@@ -21,31 +21,33 @@ import {
   useLaserEyes
 } from '@omnisat/lasereyes';
 import { ChevronRight, MonitorDown } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { StaticImageData } from 'next/image';
-import React, { isValidElement, ReactElement, useContext, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import React, { ReactElement, isValidElement, useContext, useMemo } from 'react';
 import { toast } from 'sonner';
 
 import { AuthContext } from '@/app/providers/AuthContext';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { ESupportedWallets, NETWORK } from '@/lib/constants';
 import { shortenAddress } from '@/lib/utilities';
+
 import { Button } from '../ui/button';
-import { ESUPPORTED_WALLETS, NETWORK } from '@/lib/constants';
-import { useRouter } from 'next/navigation';
 
 const WALLET_OPTIONS: {
-  [key in ESUPPORTED_WALLETS]: {
+  [key in ESupportedWallets]: {
     name: string;
     icon: StaticImageData | ReactElement;
     provider:
-    | typeof XVERSE
-    | typeof UNISAT
-    | typeof MAGIC_EDEN
-    | typeof LEATHER
-    | typeof OKX
-    | typeof OYL
-    | typeof PHANTOM
-    | typeof ORANGE
-    | typeof WIZZ;
+      | typeof XVERSE
+      | typeof UNISAT
+      | typeof MAGIC_EDEN
+      | typeof LEATHER
+      | typeof OKX
+      | typeof OYL
+      | typeof PHANTOM
+      | typeof ORANGE
+      | typeof WIZZ;
     recommended?: boolean;
     downloadUrl?: string;
   };
@@ -78,11 +80,25 @@ const WALLET_OPTIONS: {
 };
 
 export default function ConnectWallet() {
-  const { loading: signingInProgress, isAuthenticated, logOut } = useContext(AuthContext);
+  const { logOut } = useContext(AuthContext);
   const router = useRouter();
-  const { connect, connected, address, hasUnisat, hasLeather, hasMagicEden, hasOkx, hasOrange, hasOyl, hasPhantom, hasXverse, hasWizz, provider } = useLaserEyes();
-  
-  const handleConnect = async (provider: ESUPPORTED_WALLETS) => {
+  const {
+    connect,
+    connected,
+    address,
+    hasUnisat,
+    hasLeather,
+    hasMagicEden,
+    hasOkx,
+    hasOrange,
+    hasOyl,
+    hasPhantom,
+    hasXverse,
+    hasWizz,
+    provider
+  } = useLaserEyes();
+
+  const handleConnect = async (provider: ESupportedWallets) => {
     try {
       await connect(provider as any);
     } catch (error: any) {
@@ -95,99 +111,92 @@ export default function ConnectWallet() {
 
   const WalletInstallationMatrix = useMemo(() => {
     return {
-      [ESUPPORTED_WALLETS.UNISAT]: hasUnisat,
-      [ESUPPORTED_WALLETS.XVERSE]: hasXverse,
-      [ESUPPORTED_WALLETS.MAGIC_EDEN]: hasMagicEden,
-      [ESUPPORTED_WALLETS.LEATHER]: hasLeather,
-      [ESUPPORTED_WALLETS.OKX]: hasOkx,
-      [ESUPPORTED_WALLETS.OYL]: hasOyl,
-      [ESUPPORTED_WALLETS.PHANTOM]: hasPhantom,
-      [ESUPPORTED_WALLETS.WIZZ]: hasWizz,
-      [ESUPPORTED_WALLETS.ORANGE]: hasOrange
+      [ESupportedWallets.UNISAT]: hasUnisat,
+      [ESupportedWallets.XVERSE]: hasXverse,
+      [ESupportedWallets.MAGIC_EDEN]: hasMagicEden,
+      [ESupportedWallets.LEATHER]: hasLeather,
+      [ESupportedWallets.OKX]: hasOkx,
+      [ESupportedWallets.OYL]: hasOyl,
+      [ESupportedWallets.PHANTOM]: hasPhantom,
+      [ESupportedWallets.WIZZ]: hasWizz,
+      [ESupportedWallets.ORANGE]: hasOrange
     };
   }, [hasUnisat, hasXverse, hasMagicEden, hasLeather, hasLeather, hasOkx, hasOyl, hasPhantom, hasOrange, hasWizz]);
 
+  type TWalletIcon = StaticImageData | ReactElement;
+  const DynamicImage = dynamic(() => import('next/image'), { ssr: false });
 
+  const renderWalletIcon = (icon: TWalletIcon): ReactElement => {
+    if (isValidElement(icon)) {
+      return icon;
+    }
 
-
-type WalletIcon = StaticImageData | ReactElement;
-const renderWalletIcon = (icon: WalletIcon): ReactElement => {
-  if (isValidElement(icon)) {
-    return icon;
-  }
-  const Image = require('next/image').default;
-  return <Image src={icon} alt="wallet icon" width={24} height={24} />;
-};
-
-
+    if (typeof icon === 'string') {
+      return <DynamicImage src={icon} alt='wallet icon' width={24} height={24} />;
+    }
+    return <>{icon}</>;
+  };
   return (
     <DropdownMenu>
-      {!connected &&
-        <DropdownMenuTrigger asChild>
-          <Button variant='outline' size='icon' className='w-auto p-3'>Connect Wallet</Button>
-        </DropdownMenuTrigger>
-      }
-
-      {connected && provider &&
+      {!connected && (
         <DropdownMenuTrigger asChild>
           <Button variant='outline' size='icon' className='w-auto p-3'>
-          {renderWalletIcon(WALLET_OPTIONS[provider as ESUPPORTED_WALLETS].icon)}
-
-
-            {shortenAddress(address)}</Button>
+            Connect Wallet
+          </Button>
         </DropdownMenuTrigger>
-      }
+      )}
+
+      {connected && provider && (
+        <DropdownMenuTrigger asChild>
+          <Button variant='outline' size='icon' className='w-auto p-3'>
+            {renderWalletIcon(WALLET_OPTIONS[provider as ESupportedWallets].icon)}
+
+            {shortenAddress(address)}
+          </Button>
+        </DropdownMenuTrigger>
+      )}
       <DropdownMenuContent align='end'>
-        {
-          !connected &&
+        {!connected &&
           Object.entries(WALLET_OPTIONS).map(([key, wallet]) => {
-            const hasWallet = WalletInstallationMatrix[key as ESUPPORTED_WALLETS];
+            const hasWallet = WalletInstallationMatrix[key as ESupportedWallets];
 
             return (
               <DropdownMenuItem
                 key={key}
                 onClick={() => {
-                  if (hasWallet) return handleConnect(key as ESUPPORTED_WALLETS);
+                  if (hasWallet) return handleConnect(key as ESupportedWallets);
                   else if (wallet.downloadUrl && typeof window !== 'undefined') {
                     window.open(wallet.downloadUrl, '_blank');
                   }
                 }}
               >
-                <div className='flex items-center justify-between w-full space-x-2'>
+                <div className='flex w-full items-center justify-between space-x-2'>
                   <div className='flex items-center space-x-2'>
                     {React.isValidElement(wallet.icon) ? wallet.icon : null}
                     <span className='capitalize'>{key}</span>
                   </div>
-                  {hasWallet ? (
-                    <ChevronRight size={20} className='hover:text-white' />
-                  ) : (
-                    <MonitorDown size={21} />
-                  )}
+                  {hasWallet ? <ChevronRight size={20} className='hover:text-white' /> : <MonitorDown size={21} />}
                 </div>
               </DropdownMenuItem>
             );
-          })
-        }
+          })}
 
-
-        {
-          connected && (
-            <>
-              <DropdownMenuItem>
-                <span onClick={() => router.push('/dashboard')}>Dashboard</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <span
+        {connected && (
+          <>
+            <DropdownMenuItem>
+              <span onClick={() => router.push('/dashboard')}>Dashboard</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <span
                 onClick={() => {
                   logOut();
                 }}
               >
                 Logout
               </span>
-              </DropdownMenuItem>
-            </>
-          )
-        }
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

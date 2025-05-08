@@ -1,51 +1,41 @@
 'use client';
 
-import { FC, ReactNode, useState } from 'react';
-
-import { Session } from 'next-auth';
-
+import { LaserEyesProvider } from '@omnisat/lasereyes';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider } from 'next-themes';
-import AuthContextProvider from './AuthContext';
+import { FC, ReactNode, useState } from 'react';
 
-import { ONE_MINUTE, NETWORK } from '@/lib/constants';
-import { LaserEyesProvider } from '@omnisat/lasereyes';
+import { NETWORK, ONE_MINUTE } from '@/lib/constants';
 import { mapAppNetworkToLaserEyesNetwork } from '@/lib/utilities';
 
+import AuthContextProvider from './AuthContext';
 
-interface ProvidersProps {
+interface IProvidersProps {
   children: NonNullable<ReactNode>;
   session: Session | null;
 }
 
-const Providers: FC<ProvidersProps> = ({ children, session }) => {
-  const [client] = useState(new QueryClient({
-    defaultOptions: {
-      queries: {
-        refetchOnMount: false,
-        refetchOnReconnect: true
-      },
-    },
-  }));
-  
+const Providers: FC<IProvidersProps> = ({ children, session }) => {
+  const [client] = useState(
+    new QueryClient({
+      defaultOptions: {
+        queries: {
+          refetchOnMount: false,
+          refetchOnReconnect: true
+        }
+      }
+    })
+  );
+
   return (
-    <ThemeProvider
-      attribute='class'
-      defaultTheme='system'
-      enableSystem
-    >
+    <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
       <LaserEyesProvider config={{ network: mapAppNetworkToLaserEyesNetwork(NETWORK) }}>
-      <SessionProvider 
-          session={session}
-          refetchInterval={5  * ONE_MINUTE.seconds}
-          refetchOnWindowFocus={true}
-        >
+        <SessionProvider session={session} refetchInterval={5 * ONE_MINUTE.seconds} refetchOnWindowFocus={true}>
           <QueryClientProvider client={client}>
-            <AuthContextProvider>
-              {children}
-            </AuthContextProvider>
+            <AuthContextProvider>{children}</AuthContextProvider>
             <ReactQueryDevtools initialIsOpen={false} />
           </QueryClientProvider>
         </SessionProvider>

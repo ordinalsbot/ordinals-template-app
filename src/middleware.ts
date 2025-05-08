@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
+
 import { SESSION_TOKEN_NAME } from './lib/constants';
- 
+
 export function middleware(request: NextRequest) {
   // Grab the session cookie from SESSION_TOKEN_NAME
   const currentUser = request.cookies.get(SESSION_TOKEN_NAME)?.value;
@@ -18,9 +19,12 @@ export function middleware(request: NextRequest) {
     }
   }
 }
- 
+
 export const config = {
-  matcher: [{
-    source: '/dashboard',
-  }, '/login'],
+  matcher: [
+    {
+      source: '/dashboard'
+    },
+    '/login'
+  ]
 };

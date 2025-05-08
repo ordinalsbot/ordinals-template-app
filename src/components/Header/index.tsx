@@ -1,26 +1,22 @@
 'use client';
 
-import { AuthContext } from '@/app/providers/AuthContext';
 import { useContext } from 'react';
-import ConnectWallet from './ConnectWallet';
-import { Loading } from '../forms/common';
+
+import { AuthContext } from '@/app/providers/AuthContext';
 import { APP_NAME } from '@/lib/constants';
 
+import { Loading } from '../forms/common';
+import ConnectWallet from './ConnectWallet';
+
 export default function Header() {
-  
   const { loading: authLoading } = useContext(AuthContext);
 
   return (
-    <header className='h-[--header-height] flex justify-center items-center'>
-      <div className='
-          flex justify-between items-center 
-          px-4 md:px-16 
-          w-full
-        '
-      >
+    <header className='flex h-[--header-height] items-center justify-center'>
+      <div className='flex w-full items-center justify-between px-4 md:px-16'>
         <h1 className='text-2xl font-bold'>{APP_NAME}</h1>
-        { authLoading && <Loading /> }
-        { !authLoading && <ConnectWallet />}
+        {authLoading && <Loading />}
+        {!authLoading && <ConnectWallet />}
       </div>
     </header>
   );

@@ -1,10 +1,11 @@
 import { NextAuthOptions, Session } from 'next-auth';
-import { SESSION_TOKEN_NAME } from '../constants';
-import admin from '@/app/api/firebase';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
+import admin from '@/app/api/firebase';
 
-export interface CustomSession extends Session {
+import { SESSION_TOKEN_NAME } from '../constants';
+
+export interface ICustomSession extends Session {
   user: {
     id?: string; // Assuming 'id' is a string. Adjust the type as necessary.
   } & Session['user']; // Keep the default Session user fields
@@ -33,7 +34,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }: any) {
-      const customSession = session as CustomSession;
+      const customSession = session as ICustomSession;
       if (!session.user) customSession.user = {};
       customSession.user.id = token.id;
       return customSession;
