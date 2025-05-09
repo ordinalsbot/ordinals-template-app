@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '@/lib/constants';
+import { PUBLIC_API_URL } from '@/lib/constants';
 import { httpError } from '@/lib/utilities';
 
 interface IApiResponse<T> {
@@ -7,13 +7,17 @@ interface IApiResponse<T> {
   status?: number;
 }
 
-class ApiClient {
+interface ICustomRequestInit extends RequestInit {
+  baseUrl?: string;
+}
+
+export class ApiClient {
   private static instance: ApiClient;
   private baseUrl: string;
   private defaultHeaders: HeadersInit;
 
   private constructor() {
-    this.baseUrl = API_BASE_URL;
+    this.baseUrl = PUBLIC_API_URL;
     this.defaultHeaders = {
       'Content-Type': 'application/json',
       Authorization: `Bearer `
@@ -27,8 +31,8 @@ class ApiClient {
     return ApiClient.instance;
   }
 
-  private async request<T>(endpoint: string, options: RequestInit): Promise<IApiResponse<T>> {
-    const url = `${this.baseUrl}${endpoint}`;
+  private async request<T>(endpoint: string, options: ICustomRequestInit): Promise<IApiResponse<T>> {
+    const url = `${options.baseUrl || this.baseUrl}${endpoint}`;
     const headers: HeadersInit = {
       ...this.defaultHeaders,
       ...(options.headers || {})
@@ -55,24 +59,24 @@ class ApiClient {
 
     return {
       success: true,
-      data: data as T,
+      data,
       status
     };
   }
 
-  public get<T>(endpoint: string, options?: Omit<RequestInit, 'method'>) {
+  public get<T>(endpoint: string, options?: Omit<ICustomRequestInit, 'method'>) {
     return this.request<T>(endpoint, { method: 'GET', ...options });
   }
 
-  public post<T>(endpoint: string, options?: Omit<RequestInit, 'method'>) {
+  public post<T>(endpoint: string, options?: Omit<ICustomRequestInit, 'method'>) {
     return this.request<T>(endpoint, { method: 'POST', ...options });
   }
 
-  public put<T>(endpoint: string, options?: Omit<RequestInit, 'method'>) {
+  public put<T>(endpoint: string, options?: Omit<ICustomRequestInit, 'method'>) {
     return this.request<T>(endpoint, { method: 'PUT', ...options });
   }
 
-  public delete<T>(endpoint: string, options?: Omit<RequestInit, 'method'>) {
+  public delete<T>(endpoint: string, options?: Omit<ICustomRequestInit, 'method'>) {
     return this.request<T>(endpoint, { method: 'DELETE', ...options });
   }
 
@@ -81,10 +85,6 @@ class ApiClient {
       ...this.defaultHeaders,
       ...headers
     };
-  }
-
-  public setBaseUrl(newBaseUrl: string) {
-    this.baseUrl = newBaseUrl;
   }
 
   public static async parseFetchResponse(response: Response) {
