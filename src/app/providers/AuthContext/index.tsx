@@ -7,42 +7,19 @@ import { ReactNode, createContext, useEffect, useMemo, useRef, useState } from '
 import { toast } from 'sonner';
 
 import { WALLET_SIGN_IN_MESSAGE } from '@/lib/constants';
-import { WALLET_COOKIE } from '@/lib/constants';
 import { auth } from '@/lib/firebase';
 
-import { IAuthContext, IWallet } from './auth.types';
+import { IAuthContext } from './auth.types';
 
 export const AuthContext = createContext<IAuthContext>({} as any);
 
 const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> }) => {
-  const {
-    connected,
-    address,
-    publicKey,
-    signMessage,
-    paymentAddress,
-    paymentPublicKey,
-    provider,
-    isInitializing,
-    isConnecting,
-    disconnect
-  } = useLaserEyes();
+  const { connected, address, signMessage, isInitializing, isConnecting, disconnect } = useLaserEyes();
 
   const listeners = useRef<(() => void)[]>([]);
 
   const [loading, setLoading] = useState<boolean>(true);
-  const [wallet, setWallet] = useState<IWallet | null>(null);
-  const isAuthenticated = useMemo(() => (auth?.currentUser ? true : false), [auth.currentUser]);
-
-  const logIn = () => {
-    setWallet({
-      ordinalsAddress: address,
-      ordinalsPublicKey: publicKey,
-      paymentAddress,
-      paymentPublicKey,
-      wallet: provider
-    });
-  };
+  const isAuthenticated = useMemo(() => (auth?.currentUser && connected ? true : false), [auth.currentUser, connected]);
 
   const logOut = () => {
     auth
@@ -51,7 +28,6 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
         listeners.current.forEach((unsubscribe) => unsubscribe());
         listeners.current = [];
 
-        setWallet(null);
         setLoading(false);
 
         disconnect();
@@ -86,8 +62,9 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
         await signInWithCustomToken(auth, customToken);
 
         const idToken = await auth.currentUser?.getIdToken(true);
+
         if (idToken) {
-          await signIn('credentials', { redirect: false, idToken });
+          await signIn('credentials', { redirect: false, idToken, ordinalsAddress: address });
           return true;
         }
       } catch (error) {
@@ -119,22 +96,18 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
             }
             const signInResult = await signIntoFirebase(address, signedMessage);
 
-            if (signInResult) {
-              return logIn();
-            } else {
+            if (!signInResult) {
               logOut();
               return toast.error('Failed to sign into Firebase');
             }
           } catch (error) {
-            toast.error('User rejected request');
+            toast.error((error as Error).message || 'User rejected request');
             console.error(error);
             return logOut();
           }
         };
 
         signMessageForFirebase();
-      } else {
-        logIn();
       }
     }
   }, [connected, isInitializing, loading, isConnecting]);
@@ -154,12 +127,6 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
     if (firebaseUser) {
       // TODO: Load user data from RTDB or Firestore
 
-      const localWallet = JSON.parse(localStorage.getItem(WALLET_COOKIE) || 'null');
-
-      if (localWallet) {
-        setWallet(localWallet);
-      }
-
       setLoading(false);
     } else {
       logOut();
@@ -177,8 +144,7 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
       value={{
         isAuthenticated,
         logOut,
-        loading,
-        wallet
+        loading
       }}
     >
       {children}

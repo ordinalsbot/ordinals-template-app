@@ -1,5 +1,6 @@
 'use client';
 
+import { useLaserEyes } from '@omnisat/lasereyes';
 import { useForm } from '@tanstack/react-form';
 import { useQuery } from '@tanstack/react-query';
 import { valibotValidator } from '@tanstack/valibot-form-adapter';
@@ -32,7 +33,8 @@ const directInscribeSchema = v.object({
 type TDirectInscribeForm = v.InferInput<typeof directInscribeSchema>;
 
 export default function Inscribe() {
-  const { wallet } = useContext(AuthContext);
+  const { isAuthenticated } = useContext(AuthContext);
+  const { address } = useLaserEyes();
   const [loading, setLoading] = useState(false);
   const [order, setOrder] = useState<DirectInscriptionOrder | null>(null);
 
@@ -86,7 +88,7 @@ export default function Inscribe() {
         return toast.error('Please select a file');
       }
 
-      if (!wallet?.ordinalsAddress) {
+      if (!isAuthenticated) {
         setLoading(false);
         return toast.error('Please connect a wallet');
       }
@@ -115,7 +117,7 @@ export default function Inscribe() {
           ],
           postage: LOW_POSTAGE,
           fee: feeRate?.fastestFee,
-          receiveAddress: wallet?.ordinalsAddress
+          receiveAddress: address
         });
 
         setOrder(directInscribeResponse);

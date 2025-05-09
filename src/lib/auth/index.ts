@@ -1,5 +1,6 @@
-import { NextAuthOptions, Session } from 'next-auth';
+import { NextAuthOptions, Session, User } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { StringifyOptions } from 'querystring';
 
 import admin from '@/app/api/firebase';
 
@@ -7,8 +8,9 @@ import { SESSION_TOKEN_NAME } from '../constants';
 
 export interface ICustomSession extends Session {
   user: {
-    id?: string; // Assuming 'id' is a string. Adjust the type as necessary.
-  } & Session['user']; // Keep the default Session user fields
+    id?: string;
+    ordinalsAddress?: string;
+  } & Session['user'];
 }
 
 const MAX_AGE = 60 * 60 * 24 * 7;
@@ -24,19 +26,29 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: false
+        secure: process.env.NODE_ENV === 'production'
       }
     }
   },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.id = user.id;
+      if (user) {
+        token.id = user.id;
+        token.ordinalsAddress = (
+          user as User & {
+            ordinalsAddress: StringifyOptions;
+          }
+        ).ordinalsAddress;
+      }
       return token;
     },
     async session({ session, token }: any) {
       const customSession = session as ICustomSession;
       if (!session.user) customSession.user = {};
+
       customSession.user.id = token.id;
+      customSession.user.ordinalsAddress = token.ordinalsAddress;
+
       return customSession;
     }
   },
@@ -47,14 +59,24 @@ export const authOptions: NextAuthOptions = {
         idToken: {
           label: 'ID Token',
           type: 'text'
+        },
+        ordinalsAddress: {
+          label: 'Ordinals Address',
+          type: 'text'
         }
       },
       async authorize(credentials) {
-        if (!credentials) throw new Error('Invalid Credentials');
+        if (!credentials || !credentials.idToken || !credentials.ordinalsAddress) {
+          throw new Error('Invalid Credentials');
+        }
         try {
-          // Verify the ID token using Firebase Admin SDK
           const token = await admin.auth().verifyIdToken(credentials.idToken);
-          const user = { id: token.uid };
+
+          const user = {
+            id: token.uid,
+            ordinalsAddress: credentials.ordinalsAddress
+          };
+
           return user;
         } catch (error) {
           console.error('Error verifying ID token', error);

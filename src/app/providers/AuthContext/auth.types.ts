@@ -11,6 +11,5 @@ export interface IWallet {
 export interface IAuthContext {
   isAuthenticated: boolean;
   logOut: () => void;
-  wallet: IWallet | null;
   loading: boolean;
 }
