@@ -3,6 +3,7 @@
 import { useContext } from 'react';
 
 import { AuthContext } from '@/app/providers/AuthContext';
+import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary';
 import { APP_NAME } from '@/lib/constants';
 
 import { Loading } from '../forms/common';
@@ -16,7 +17,7 @@ export default function Header() {
       <div className='flex w-full items-center justify-between px-4 md:px-16'>
         <h1 className='text-2xl font-bold'>{APP_NAME}</h1>
         {authLoading && <Loading />}
-        {!authLoading && <ConnectWallet />}
+        <ErrorBoundary>{!authLoading && <ConnectWallet />}</ErrorBoundary>
       </div>
     </header>
   );

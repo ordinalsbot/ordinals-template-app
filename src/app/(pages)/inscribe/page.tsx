@@ -15,7 +15,7 @@ import Charge from '@/components/Charge';
 import Order from '@/components/Order';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { EXPLORER_URL, MEMPOOL_URL, ONE_MINUTE, ONE_SECOND, USE_LOW_POSTAGE } from '@/lib/constants';
+import { EXPLORER_URL, LOW_POSTAGE, MEMPOOL_URL, ONE_MINUTE, ONE_SECOND } from '@/lib/constants';
 import { storage } from '@/lib/firebase';
 import ordinalsbot from '@/lib/ob';
 
@@ -113,7 +113,7 @@ export default function Inscribe() {
               type
             }
           ],
-          lowPostage: USE_LOW_POSTAGE,
+          postage: LOW_POSTAGE,
           fee: feeRate?.fastestFee,
           receiveAddress: wallet?.ordinalsAddress
         });

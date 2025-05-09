@@ -126,7 +126,7 @@ export default function ConnectWallet() {
   type TWalletIcon = StaticImageData | ReactElement;
   const DynamicImage = dynamic(() => import('next/image'), { ssr: false });
 
-  const renderWalletIcon = (icon: TWalletIcon): ReactElement => {
+  const renderWalletIcon = (icon: TWalletIcon): ReactElement | null => {
     if (isValidElement(icon)) {
       return icon;
     }
@@ -134,7 +134,7 @@ export default function ConnectWallet() {
     if (typeof icon === 'string') {
       return <DynamicImage src={icon} alt='wallet icon' width={24} height={24} />;
     }
-    return <>{icon}</>;
+    return null;
   };
   return (
     <DropdownMenu>

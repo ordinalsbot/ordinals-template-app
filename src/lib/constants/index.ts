@@ -22,6 +22,7 @@ export const WALLET_SIGN_IN_MESSAGE = `Sign into ${APP_NAME} Application`;
 export const SESSION_TOKEN_NAME = `${CLEAN_APP_NAME}.session-token`;
 
 export const USE_LOW_POSTAGE = true;
+export const LOW_POSTAGE = 546;
 export const ONE_BITCOIN = 100000000;
 
 export const EXPLORER_URL = process.env.ORDINALS_EXPLORER_URL || 'https://explorer.ordinalsbot.com';
@@ -45,3 +46,5 @@ export enum ESupportedWallets {
   PHANTOM = 'phantom',
   WIZZ = 'wizz'
 }
+
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api';
