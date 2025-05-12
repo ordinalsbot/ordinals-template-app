@@ -2,21 +2,22 @@
 
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 
-export default function Footer() { 
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+
+export default function Footer() {
   const { setTheme } = useTheme();
   return (
-    <div className='flex flex-row justify-between items-center h-20 p-5'>
+    <div className='flex h-20 flex-row items-center justify-between p-5'>
       <div></div>
-      <div>Powered By <Link className='hover:text-sky-500' href='https://ordinalsbot.com' target='_blank'>OrdinalsBot</Link></div>
+      <div>
+        Powered By{' '}
+        <Link className='hover:text-sky-500' href='https://ordinalsbot.com' target='_blank'>
+          OrdinalsBot
+        </Link>
+      </div>
       <div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -27,15 +28,9 @@ export default function Footer() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
-            <DropdownMenuItem onClick={() => setTheme('light')}>
-              Light
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme('dark')}>
-              Dark
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme('system')}>
-              System
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme('light')}>Light</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme('dark')}>Dark</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme('system')}>System</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

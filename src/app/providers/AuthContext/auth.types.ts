@@ -1,23 +1,15 @@
+import { ESupportedWallets } from '@/lib/constants';
+
 export interface IWallet {
   ordinalsAddress: string;
   ordinalsPublicKey: string;
   paymentAddress: string;
   paymentPublicKey: string;
-  wallet: SUPPORTED_WALLETS;
-};
+  wallet: ESupportedWallets;
+}
 
 export interface IAuthContext {
-  loginWithWallet: (wallet: IWallet) => void;
-  logout: () => void;
-
-  wallet: IWallet | null;
-
+  isAuthenticated: boolean;
+  logOut: () => void;
   loading: boolean;
-};
-
-export enum SUPPORTED_WALLETS {
-  UNISAT = 'unisat',
-  XVERSE = 'xverse',
-  MAGIC_EDEN = 'magic-eden',
-  LEATHER = 'leather'
-};
+}

@@ -1,9 +1,9 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
+import 'firebase/analytics';
+import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
 import 'firebase/remote-config';
-import 'firebase/analytics';
+import { getStorage } from 'firebase/storage';
 
 const firebaseClientConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_PUBLIC_API_KEY,

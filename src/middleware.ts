@@ -1,9 +1,11 @@
+import { getToken } from 'next-auth/jwt';
 import type { NextRequest } from 'next/server';
-import { SESSION_TOKEN_NAME } from './lib/constants';
- 
-export function middleware(request: NextRequest) {
+
+import { NEXTAUTH_SECRET, SESSION_TOKEN_NAME } from '@/lib/constants';
+
+export async function middleware(request: NextRequest) {
   // Grab the session cookie from SESSION_TOKEN_NAME
-  const currentUser = request.cookies.get(SESSION_TOKEN_NAME)?.value;
+  const currentUser = await getToken({ req: request, secret: NEXTAUTH_SECRET, cookieName: SESSION_TOKEN_NAME });
 
   // If there is no currentUser then we need to check if the user is trying to access an authenticate route (/dashboard/**) and redirect to /login
   if (!currentUser) {
@@ -18,9 +20,12 @@ export function middleware(request: NextRequest) {
     }
   }
 }
- 
+
 export const config = {
-  matcher: [{
-    source: '/dashboard',
-  }, '/login'],
+  matcher: [
+    {
+      source: '/dashboard'
+    },
+    '/login'
+  ]
 };

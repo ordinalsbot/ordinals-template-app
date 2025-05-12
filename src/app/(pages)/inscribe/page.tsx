@@ -1,22 +1,24 @@
 'use client';
 
-import ordinalsbot from '@/lib/ob';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { useLaserEyes } from '@omnisat/lasereyes';
 import { useForm } from '@tanstack/react-form';
-import * as v from 'valibot';
+import { useQuery } from '@tanstack/react-query';
+import { valibotValidator } from '@tanstack/valibot-form-adapter';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { LoaderPinwheel } from 'lucide-react';
+import { DirectInscriptionOrder, type InscriptionFile, InscriptionOrderState } from 'ordinalsbot/dist/types/v1';
 import { useContext, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { valibotValidator } from '@tanstack/valibot-form-adapter';
-import { storage } from '@/lib/firebase';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { EXPLORER_URL, MEMPOOL_URL, ONE_MINUTE, ONE_SECOND, USE_LOW_POSTAGE } from '@/lib/constants';
-import { DirectInscriptionOrder, InscriptionOrderState, type InscriptionFile } from 'ordinalsbot/dist/types/v1';
-import { useQuery } from '@tanstack/react-query';
-import Order from '@/components/Order';
-import Charge from '@/components/Charge';
-import { LoaderPinwheel } from 'lucide-react';
+import * as v from 'valibot';
+
 import { AuthContext } from '@/app/providers/AuthContext';
+import Charge from '@/components/Charge';
+import Order from '@/components/Order';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { EXPLORER_URL, LOW_POSTAGE, MEMPOOL_URL, ONE_MINUTE, ONE_SECOND } from '@/lib/constants';
+import { storage } from '@/lib/firebase';
+import ordinalsbot from '@/lib/ob';
 
 const directInscribeSchema = v.object({
   file: v.nullable(
@@ -31,14 +33,17 @@ const directInscribeSchema = v.object({
 type TDirectInscribeForm = v.InferInput<typeof directInscribeSchema>;
 
 export default function Inscribe() {
-
-  const { wallet } = useContext(AuthContext);
+  const { isAuthenticated } = useContext(AuthContext);
+  const { address } = useLaserEyes();
   const [loading, setLoading] = useState(false);
   const [order, setOrder] = useState<DirectInscriptionOrder | null>(null);
 
   const { data, error, isLoading } = useQuery({
     queryFn: async () => {
-      return ordinalsbot.Inscription().getOrder(order?.id!);
+      if (!order?.id) {
+        throw new Error('Order ID is required');
+      }
+      return ordinalsbot.Inscription().getOrder(order.id);
     },
     queryKey: ['order', order?.id],
     enabled: !!order,
@@ -50,12 +55,14 @@ export default function Inscribe() {
     }
   });
 
-  const { data: feeRate, isLoading: feeRateLoading, error: feeRateError } = useQuery(
-    {
-      queryFn: async () => fetch('/api/feeRate').then(res => res.json()),
-      queryKey: ['feeRate']
-    }
-  );
+  const {
+    data: feeRate,
+    isLoading: feeRateLoading,
+    error: feeRateError
+  } = useQuery({
+    queryFn: async () => fetch('/api/feeRate').then((res) => res.json()),
+    queryKey: ['feeRate']
+  });
 
   useEffect(() => {
     if (isLoading) return;
@@ -64,14 +71,10 @@ export default function Inscribe() {
 
   const form = useForm({
     defaultValues: {
-      file: null,
+      file: null
     },
-    onSubmit: async ({ value }: { value: TDirectInscribeForm}) => {
-
-      if (
-        (loading || error) ||
-        (feeRateLoading || feeRateError)
-      ) return; // Don't submit if we're loading or have an error
+    onSubmit: async ({ value }: { value: TDirectInscribeForm }) => {
+      if (loading || error || feeRateLoading || feeRateError) return; // Don't submit if we're loading or have an error
 
       try {
         v.parse(directInscribeSchema, value);
@@ -85,7 +88,7 @@ export default function Inscribe() {
         return toast.error('Please select a file');
       }
 
-      if (!wallet?.ordinalsAddress) {
+      if (!isAuthenticated) {
         setLoading(false);
         return toast.error('Please connect a wallet');
       }
@@ -95,38 +98,40 @@ export default function Inscribe() {
       const fileExtension = value.file?.name.split('.').pop()?.toLowerCase();
 
       const fileRef = ref(storage, `/inscriptions.${fileExtension}`);
-      
+
       const uploadResult = await uploadBytes(fileRef, value.file as File);
 
       if (uploadResult) {
         const downloadURL = await getDownloadURL(fileRef);
-        
-        const { type, name, size  } = file;
+
+        const { type, name, size } = file;
 
         const directInscribeResponse = await ordinalsbot.Inscription().createDirectOrder({
-          files: [{
-            url: downloadURL,
-            name, size, type
-          }],
-          lowPostage: USE_LOW_POSTAGE,
+          files: [
+            {
+              url: downloadURL,
+              name,
+              size,
+              type
+            }
+          ],
+          postage: LOW_POSTAGE,
           fee: feeRate?.fastestFee,
-          receiveAddress: wallet?.ordinalsAddress
+          receiveAddress: address
         });
 
         setOrder(directInscribeResponse);
-
       } else {
         toast.error('Failed to upload avatar');
       }
       setLoading(false);
     },
     validatorAdapter: valibotValidator()
-  
   });
-  
+
   return (
-    <div className='flex flex-row flex-wrap justify-center w-full pt-10 px-10 gap-5'>
-      <div className='flex flex-col justify-between w-2/3 h-48 gap-5'>
+    <div className='flex w-full flex-row flex-wrap justify-center gap-5 px-10 pt-10'>
+      <div className='flex h-48 w-2/3 flex-col justify-between gap-5'>
         <h2 className='text-2xl'>Inscribe a File</h2>
         <form
           className='flex flex-col'
@@ -142,7 +147,9 @@ export default function Inscribe() {
               const { name } = field;
               return (
                 <div className='flex flex-row items-center justify-between gap-2'>
-                  <label className='uppercase' htmlFor={name}>{name}</label>
+                  <label className='uppercase' htmlFor={name}>
+                    {name}
+                  </label>
                   <Input
                     className='font-black ring-1'
                     type='file'
@@ -158,8 +165,10 @@ export default function Inscribe() {
             }}
           />
 
-          <div className='flex flex-row justify-end mt-5'>
-            <Button type='submit' disabled={loading || feeRateLoading}>Inscribe { loading && <LoaderPinwheel className='animate-spin' /> }</Button>
+          <div className='mt-5 flex flex-row justify-end'>
+            <Button type='submit' disabled={loading || feeRateLoading}>
+              Inscribe {loading && <LoaderPinwheel className='animate-spin' />}
+            </Button>
           </div>
         </form>
       </div>
@@ -169,33 +178,38 @@ export default function Inscribe() {
       </div>
 
       <div className='w-1/3'>
-        <Charge 
-          loading={isLoading} 
-          charge={order?.charge}
-          feeRate={feeRate}
-        />
+        <Charge loading={isLoading} charge={order?.charge} feeRate={feeRate} />
       </div>
 
-      {
-        [InscriptionOrderState.QUEUED, InscriptionOrderState.COMPLETED].includes(order?.state!) && <div className='w-2/3'>
+      {order?.state && [InscriptionOrderState.QUEUED, InscriptionOrderState.COMPLETED].includes(order.state) && (
+        <div className='w-2/3'>
           <h3 className='text-2xl'>Inscription Status</h3>
-          { 
-            order?.files?.map((file: InscriptionFile, index: number) => {
-              return (
-                <div className='flex flex-row justify-between rounded-sm border-solid border-2 border-neutral-500 h-12 items-center px-5' key={index}>
-                  <div className='flex-1'>{index + 1}</div>
-                  <div className='flex-1'>{file.name}</div>
-                  <div className='flex-1'>{file.status}</div>
-                  <div className='flex flex-col 2'>
-                    <div className='text-sm'><a href={`${EXPLORER_URL}/${file.inscriptionId}`} target='_blank'>{file.inscriptionId}</a></div>
-                    <div className='text-xs'><a href={`${MEMPOOL_URL}/tx/${file.sent}`} target='_blank'>{file.sent}</a></div>
+          {order?.files?.map((file: InscriptionFile, index: number) => {
+            return (
+              <div
+                className='flex h-12 flex-row items-center justify-between rounded-sm border-2 border-solid border-neutral-500 px-5'
+                key={index}
+              >
+                <div className='flex-1'>{index + 1}</div>
+                <div className='flex-1'>{file.name}</div>
+                <div className='flex-1'>{file.status}</div>
+                <div className='2 flex flex-col'>
+                  <div className='text-sm'>
+                    <a href={`${EXPLORER_URL}/${file.inscriptionId}`} target='_blank'>
+                      {file.inscriptionId}
+                    </a>
+                  </div>
+                  <div className='text-xs'>
+                    <a href={`${MEMPOOL_URL}/tx/${file.sent}`} target='_blank'>
+                      {file.sent}
+                    </a>
                   </div>
                 </div>
-              );
-            })
-          }
+              </div>
+            );
+          })}
         </div>
-      }
+      )}
     </div>
   );
 }
