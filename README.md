@@ -40,12 +40,6 @@ By altering the `DEFAULT_METADATA` constant, you can change the structure of you
 
 Use the `layout.tsx` file to structure the top-level layout of the app. We've included the `Header`, `Footer`, and `Providers` in the base layout.
 
-### SatsConnect
-
-🔗 [sats-connect](https://docs.xverse.app/sats-connect)
-
-Sats Connect is a library for interacting with Bitcoin Wallets that have implemented the sats-connect library. It is the easiest and most streamlined library for enabling the widest array of browser-based bitcoin wallets.
-
 ### Tanstack
 
 The template app is typescript through and through. The library that we've selected to perform data querying, routing, and state management responsibilities is Tanstack. It is typescript compatible and works well with NextJS.

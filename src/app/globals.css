@@ -69,3 +69,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+.hover-blue {
+  @apply hover:text-sky-500;
+}
