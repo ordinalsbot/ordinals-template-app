@@ -3,7 +3,6 @@
 import { useLaserEyes } from '@omnisat/lasereyes';
 import { useForm } from '@tanstack/react-form';
 import { useQuery } from '@tanstack/react-query';
-import { valibotValidator } from '@tanstack/valibot-form-adapter';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { LoaderPinwheel } from 'lucide-react';
 import { DirectInscriptionOrder, type InscriptionFile, InscriptionOrderState } from 'ordinalsbot/dist/types/v1';
@@ -72,7 +71,7 @@ export default function Inscribe() {
   const form = useForm({
     defaultValues: {
       file: null
-    },
+    } as TDirectInscribeForm,
     onSubmit: async ({ value }: { value: TDirectInscribeForm }) => {
       if (loading || error || feeRateLoading || feeRateError) return; // Don't submit if we're loading or have an error
 
@@ -125,8 +124,7 @@ export default function Inscribe() {
         toast.error('Failed to upload avatar');
       }
       setLoading(false);
-    },
-    validatorAdapter: valibotValidator()
+    }
   });
 
   return (

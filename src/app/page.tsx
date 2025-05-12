@@ -19,32 +19,32 @@ export default function Home() {
           </h1>
           <p className='text-lg'>
             A template application with{' '}
-            <Link className='hover:text-sky-500' href='https://www.npmjs.com/package/ordinalsbot' target='_blank'>
+            <Link className='hover-blue' href='https://www.npmjs.com/package/ordinalsbot' target='_blank'>
               ordinalsbot
             </Link>
             ,{' '}
-            <Link className='hover:text-sky-500' href='https://docs.xverse.app/sats-connect' target='_blank'>
-              sats-connect
+            <Link className='hover-blue' href='https://lasereyes.build' target='_blank'>
+              Laser Eyes
             </Link>
             , and{' '}
-            <Link className='hover:text-sky-500' href='https://firebase.google.com/' target='_blank'>
+            <Link className='hover-blue' href='https://firebase.google.com/' target='_blank'>
               Firebase
             </Link>
           </p>
           <p className='text-md'>
             **Themed with{' '}
-            <Link className='hover:text-sky-500' href='https://ui.shadcn.com/' target='_blank'>
+            <Link className='hover-blue0' href='https://ui.shadcn.com/' target='_blank'>
               ShadCN
             </Link>{' '}
             and{' '}
-            <Link className='hover:text-sky-500' href='https://tailwindcss.com/' target='_blank'>
+            <Link className='hover-blue' href='https://tailwindcss.com/' target='_blank'>
               Tailwind
             </Link>
             **
           </p>
           <p className='my-4 font-bold'>
             Visit{' '}
-            <Link className='hover:text-sky-500' href='/inscribe'>
+            <Link className='hover-blue' href='/inscribe'>
               /inscribe
             </Link>{' '}
             to check out our example direct inscription using the <a href='https://docs.ordinalsbot.com'>OrdinalsBot API</a>

@@ -1,6 +1,6 @@
+import { useLaserEyes } from '@omnisat/lasereyes';
 import { RecommendedFees } from 'ordinalsbot/dist/types/mempool_types';
 import type { DirectInscriptionCharge } from 'ordinalsbot/dist/types/v1';
-import Wallet, { RpcErrorCode } from 'sats-connect';
 import { toast } from 'sonner';
 
 import Loading from '@/components/Loading';
@@ -17,28 +17,15 @@ export default function Charge({
   loading: boolean;
   feeRate: RecommendedFees;
 }) {
+  const { sendBTC } = useLaserEyes();
   const pay = async () => {
     if (!charge) return;
     try {
-      const response = await Wallet.request('sendTransfer', {
-        recipients: [
-          {
-            address: charge.address,
-            amount: charge.amount
-          }
-        ]
-      });
-      if (response.status === 'success') {
+      const response = await sendBTC(charge.address, charge.amount);
+
+      if (response) {
         // handle success
         toast.success('Payment successful');
-      } else {
-        if (response.error.code === RpcErrorCode.USER_REJECTION) {
-          // handle user cancellation error
-          toast.error('Payment cancelled');
-        } else {
-          // handle error
-          toast.error(response.error.message);
-        }
       }
     } catch (err: any) {
       toast.error(err.error.message);

@@ -1,5 +1,4 @@
 import { useForm } from '@tanstack/react-form';
-import { valibotValidator } from '@tanstack/valibot-form-adapter';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import * as v from 'valibot';
 
@@ -41,8 +40,7 @@ export default function SignUp() {
       } catch (error) {
         console.log('there was an error', error);
       }
-    },
-    validatorAdapter: valibotValidator()
+    }
   });
 
   return (
