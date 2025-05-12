@@ -20,7 +20,7 @@ import {
   XverseLogo,
   useLaserEyes
 } from '@omnisat/lasereyes';
-import { ChevronRight, MonitorDown } from 'lucide-react';
+import { ChevronRight, Link2Icon, MonitorDown } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { StaticImageData } from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -28,11 +28,11 @@ import React, { ReactElement, isValidElement, useContext, useMemo } from 'react'
 import { toast } from 'sonner';
 
 import { AuthContext } from '@/app/providers/AuthContext';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import Loading from '@/components/Loading';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogClose, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { ESupportedWallets, NETWORK } from '@/lib/constants';
 import { shortenAddress } from '@/lib/utilities';
-
-import { Button } from '../ui/button';
 
 const WALLET_OPTIONS: {
   [key in ESupportedWallets]: {
@@ -80,7 +80,7 @@ const WALLET_OPTIONS: {
 };
 
 export default function ConnectWallet() {
-  const { logOut } = useContext(AuthContext);
+  const { logOut, loading } = useContext(AuthContext);
   const router = useRouter();
   const {
     connect,
@@ -137,31 +137,32 @@ export default function ConnectWallet() {
     return null;
   };
   return (
-    <DropdownMenu>
+    <Dialog>
       {!connected && (
-        <DropdownMenuTrigger asChild>
+        <DialogTrigger asChild>
           <Button variant='outline' size='icon' className='w-auto p-3'>
             Connect Wallet
           </Button>
-        </DropdownMenuTrigger>
+        </DialogTrigger>
       )}
 
-      {connected && provider && (
-        <DropdownMenuTrigger asChild>
+      {connected && !loading && (
+        <DialogTrigger asChild>
           <Button variant='outline' size='icon' className='w-auto p-3'>
             {renderWalletIcon(WALLET_OPTIONS[provider as ESupportedWallets].icon)}
 
             {shortenAddress(address)}
           </Button>
-        </DropdownMenuTrigger>
+        </DialogTrigger>
       )}
-      <DropdownMenuContent align='end'>
+      <DialogContent className='pb-14 pt-14'>
         {!connected &&
+          !loading &&
           Object.entries(WALLET_OPTIONS).map(([key, wallet]) => {
             const hasWallet = WalletInstallationMatrix[key as ESupportedWallets];
 
             return (
-              <DropdownMenuItem
+              <div
                 key={key}
                 onClick={() => {
                   if (hasWallet) return handleConnect(key as ESupportedWallets);
@@ -169,6 +170,7 @@ export default function ConnectWallet() {
                     window.open(wallet.downloadUrl, '_blank');
                   }
                 }}
+                className='rounded-lg border p-4'
               >
                 <div className='flex w-full items-center justify-between space-x-2'>
                   <div className='flex items-center space-x-2'>
@@ -177,27 +179,35 @@ export default function ConnectWallet() {
                   </div>
                   {hasWallet ? <ChevronRight size={20} className='hover:text-white' /> : <MonitorDown size={21} />}
                 </div>
-              </DropdownMenuItem>
+              </div>
             );
           })}
 
-        {connected && (
+        {connected && !loading && (
           <>
-            <DropdownMenuItem>
-              <span onClick={() => router.push('/dashboard')}>Dashboard</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <span
-                onClick={() => {
-                  logOut();
-                }}
-              >
-                Logout
+            <DialogClose>
+              <span onClick={() => router.push('/dashboard')} className='flex items-center gap-2 rounded-lg border p-4'>
+                <Link2Icon /> Dashboard
               </span>
-            </DropdownMenuItem>
+            </DialogClose>
+            <Button
+              onClick={() => {
+                logOut();
+              }}
+              className='w-full rounded-lg border bg-transparent p-6 text-center text-white'
+            >
+              Logout
+            </Button>
           </>
         )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+
+        {loading && (
+          <div className='flex items-center justify-center space-x-2'>
+            <span>Connecting...</span>
+            <Loading />
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
