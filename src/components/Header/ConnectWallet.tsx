@@ -52,7 +52,6 @@ const WALLET_OPTIONS: {
     downloadUrl?: string;
   };
 } = {
-  [UNISAT]: { name: 'Unisat', icon: <UnisatLogo size={24} />, provider: UNISAT, downloadUrl: 'https://unisat.io/download' },
   [XVERSE]: {
     name: 'Xverse',
     icon: <XverseLogo size={24} />,
@@ -60,6 +59,7 @@ const WALLET_OPTIONS: {
     recommended: true,
     downloadUrl: 'https://www.xverse.app/download'
   },
+  [UNISAT]: { name: 'Unisat', icon: <UnisatLogo size={24} />, provider: UNISAT, downloadUrl: 'https://unisat.io/download' },
   [MAGIC_EDEN]: {
     name: 'Magic Eden',
     icon: <MagicEdenLogo size={24} />,
@@ -170,7 +170,7 @@ export default function ConnectWallet() {
                     window.open(wallet.downloadUrl, '_blank');
                   }
                 }}
-                className='rounded-lg border p-4'
+                className='hover:text-ob-white-80 cursor-pointer rounded-lg border p-4 *:grayscale *:hover:grayscale-0'
               >
                 <div className='flex w-full items-center justify-between space-x-2'>
                   <div className='flex items-center space-x-2'>
