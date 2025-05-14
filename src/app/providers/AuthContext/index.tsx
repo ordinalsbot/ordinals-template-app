@@ -6,7 +6,7 @@ import { signIn, signOut } from 'next-auth/react';
 import { ReactNode, createContext, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { WALLET_SIGN_IN_MESSAGE } from '@/lib/constants';
+import { AUTHENTICATED_ROUTES, WALLET_SIGN_IN_MESSAGE } from '@/lib/constants';
 import { auth } from '@/lib/firebase';
 
 import { IAuthContext } from './auth.types';
@@ -32,7 +32,7 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
 
         disconnect();
 
-        signOut({ redirect: false });
+        signOut({ redirect: Object.values(AUTHENTICATED_ROUTES).includes(window.location.pathname), callbackUrl: '/' });
       })
       .catch((error) => {
         setLoading(false);
