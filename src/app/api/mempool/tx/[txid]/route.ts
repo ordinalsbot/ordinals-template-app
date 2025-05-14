@@ -4,8 +4,8 @@ import { MEMPOOL_URL, ORDINALSBOT_PUBLIC_API_KEY } from '@/lib/constants';
 import { handleErrorBehaviour, httpError } from '@/lib/utilities';
 import apiClient from '@/lib/utilities/apiClient';
 
-export async function GET(_request: NextRequest, context: { params: { txid: string } }) {
-  const { txid } = context.params;
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ txid: string }> }) {
+  const { txid } = await params;
 
   if (!txid) {
     throw new httpError('txid is required', 400);
