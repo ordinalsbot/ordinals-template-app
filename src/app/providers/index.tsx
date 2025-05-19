@@ -7,13 +7,12 @@ import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider } from 'next-themes';
 import { FC, ReactNode, useState } from 'react';
-import { Provider as ReduxProvider } from 'react-redux';
 
-import { store } from '@/app/redux/index';
 import { NETWORK, ONE_MINUTE } from '@/lib/constants';
 import { mapAppNetworkToLaserEyesNetwork } from '@/lib/utilities';
 
 import AuthContextProvider from './AuthContext';
+import { MempoolTxProvider } from './MempoolTransactionContext';
 
 interface IProvidersProps {
   children: NonNullable<ReactNode>;
@@ -33,18 +32,18 @@ const Providers: FC<IProvidersProps> = ({ children, session }) => {
   );
 
   return (
-    <ReduxProvider store={store}>
-      <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-        <LaserEyesProvider config={{ network: mapAppNetworkToLaserEyesNetwork(NETWORK) }}>
-          <SessionProvider session={session} refetchInterval={5 * ONE_MINUTE.seconds} refetchOnWindowFocus={true}>
-            <QueryClientProvider client={client}>
-              <AuthContextProvider>{children}</AuthContextProvider>
-              <ReactQueryDevtools initialIsOpen={false} />
-            </QueryClientProvider>
-          </SessionProvider>
-        </LaserEyesProvider>
-      </ThemeProvider>
-    </ReduxProvider>
+    <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+      <LaserEyesProvider config={{ network: mapAppNetworkToLaserEyesNetwork(NETWORK) }}>
+        <SessionProvider session={session} refetchInterval={5 * ONE_MINUTE.seconds} refetchOnWindowFocus={true}>
+          <QueryClientProvider client={client}>
+            <AuthContextProvider>
+              <MempoolTxProvider>{children}</MempoolTxProvider>
+            </AuthContextProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+          </QueryClientProvider>
+        </SessionProvider>
+      </LaserEyesProvider>
+    </ThemeProvider>
   );
 };
 

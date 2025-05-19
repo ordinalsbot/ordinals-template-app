@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 
 export * from './imgs';
 export * from './time';
+export * from './routes';
+export * from './network';
+export * from './environment';
 
 export const APP_NAME = 'Ordinals Template App';
 
@@ -25,16 +28,6 @@ export const USE_LOW_POSTAGE = true;
 export const LOW_POSTAGE = 546;
 export const ONE_BITCOIN = 100000000;
 
-export const EXPLORER_URL = process.env.ORDINALS_EXPLORER_URL || 'https://explorer.ordinalsbot.com';
-export const MEMPOOL_URL = process.env.MEMPOOL_URL || 'https://mempool.space';
-
-export enum ENETWORK {
-  MAINNET = 'mainnet',
-  TESTNET = 'testnet',
-  SIGNET = 'signet'
-}
-export const NETWORK: ENETWORK = (process.env.NEXT_PUBLIC_NETWORK?.toLowerCase() || 'mainnet') as ENETWORK;
-
 export enum ESupportedWallets {
   UNISAT = 'unisat',
   XVERSE = 'xverse',
@@ -46,9 +39,3 @@ export enum ESupportedWallets {
   PHANTOM = 'phantom',
   WIZZ = 'wizz'
 }
-
-export const PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api';
-export const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET;
-export const ORDINALSBOT_PUBLIC_API_KEY = process.env.ORDINALSBOT_PUBLIC_API_KEY || '';
-export const ORDINALSBOT_EXPLORER_URL =
-  process.env.NEXT_PUBLIC_ORDINALSBOT_EXPLORER_URL || 'https://explorer.ordinalsbot.com';
