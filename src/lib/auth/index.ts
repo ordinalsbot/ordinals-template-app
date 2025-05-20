@@ -1,10 +1,11 @@
+import { Verifier } from 'bip322-js';
 import { NextAuthOptions, Session, User } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { StringifyOptions } from 'querystring';
 
 import admin from '@/app/api/firebase';
 
-import { SESSION_TOKEN_NAME } from '../constants';
+import { SESSION_TOKEN_NAME, WALLET_SIGN_IN_MESSAGE } from '../constants';
 
 export interface ICustomSession extends Session {
   user: {
@@ -63,13 +64,19 @@ export const authOptions: NextAuthOptions = {
         ordinalsAddress: {
           label: 'Ordinals Address',
           type: 'text'
+        },
+        signature: {
+          label: 'Signed Message using wallet',
+          type: 'text'
         }
       },
       async authorize(credentials) {
-        if (!credentials || !credentials.idToken || !credentials.ordinalsAddress) {
+        if (!credentials || !credentials.idToken || !credentials.ordinalsAddress || !credentials.signature) {
           throw new Error('Invalid Credentials');
         }
         try {
+          if (!Verifier.verifySignature(credentials.ordinalsAddress, WALLET_SIGN_IN_MESSAGE, credentials.signature))
+            throw new Error('Invalid Signature');
           const token = await admin.auth().verifyIdToken(credentials.idToken);
 
           const user = {
