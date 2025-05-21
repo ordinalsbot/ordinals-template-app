@@ -1,8 +1,8 @@
-import React, { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, { ReactNode, createContext, useCallback, useContext, useEffect } from 'react';
 
 import { MempoolTx } from '@/components/common/MempoolTx';
-import { fetchMempoolTx } from '@/lib/api';
-import { ONE_MINUTE, ONE_SECOND } from '@/lib/constants';
+import { ONE_SECOND } from '@/lib/constants';
+import useTransactionStore from '@/stores/transactionStore';
 import { ETransactionsType, TMempoolStatus, TMempoolTx } from '@/types';
 
 type TMempoolTxWithType = TMempoolTx & { transactionType: ETransactionsType };
@@ -19,86 +19,27 @@ interface IMempoolTxContextType {
 const MempoolTxContext = createContext<IMempoolTxContextType | undefined>(undefined);
 
 export const MempoolTxProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [transactions, setTransactions] = useState<{ [key: string]: TMempoolTxWithType }>({});
+  const {
+    transactions,
+    addTransaction,
+    removeTransaction,
+    getTransactionState,
+    getActiveTransactions,
+    getActiveTransactionByType,
+    fetchTransactionStatus
+  } = useTransactionStore();
 
-  const addTransaction = useCallback((txid: string, transactionType: ETransactionsType) => {
-    setTransactions((prev) => ({
-      ...prev,
-      [txid]: {
-        txid,
-        status: { confirmed: false } as TMempoolStatus,
-        vout: [],
-        vin: [],
-        weight: 0,
-        version: 0,
-        size: 0,
-        sigops: 0,
-        locktime: 0,
-        fee: 0,
-        transactionType
-      }
-    }));
-  }, []);
-
-  const removeTransaction = useCallback((txid: string) => {
-    setTransactions((prev) => {
-      const updated = { ...prev };
-      delete updated[txid];
-      return updated;
-    });
-  }, []);
-
-  const fetchTransactionStatus = useCallback(async (txid: string) => {
-    try {
-      const transaction = await fetchMempoolTx(txid);
-      setTransactions((prev) => ({
-        ...prev,
-        [txid]: {
-          ...prev[txid],
-          status: transaction.status,
-          vout: transaction.vout,
-          vin: transaction.vin,
-          weight: transaction.weight,
-          version: transaction.version,
-          size: transaction.size,
-          sigops: transaction.sigops,
-          locktime: transaction.locktime,
-          fee: transaction.fee
-        }
-      }));
-      if (transaction.status.confirmed) {
-        setTimeout(() => {
-          removeTransaction(txid);
-        }, ONE_MINUTE.toMillis() / 2);
-      }
-    } catch (error) {
-      console.error('Error fetching transaction status:', error);
-    }
-  }, []);
-
-  const renderTransactionById = (txid: string, isMintTransaction: boolean = true, transactionLabel?: string) => {
-    if (!transactions[txid] && !txid) return <div>No transaction found</div>;
-    return (
-      <MempoolTx
-        txid={transactions[txid] ? undefined : txid}
-        transactionLabel={transactionLabel}
-        transactionDetails={transactions[txid]}
-        isMintTransaction={isMintTransaction}
-      />
-    );
-  };
-
-  const getTransactionState = (txid: string): TMempoolStatus | 'unknown' => {
-    return transactions[txid]?.status ?? { confirmed: false };
-  };
-
-  const getActiveTransactions = () => {
-    return Object.values(transactions).filter((tx) => !tx.status.confirmed);
-  };
-
-  const getActiveTransactionByType = useCallback(
-    (transactionType: ETransactionsType) => {
-      return Object.values(transactions).filter((tx) => tx.transactionType === transactionType && !tx.status.confirmed);
+  const renderTransactionById = useCallback(
+    (txid: string, isMintTransaction: boolean = true, transactionLabel?: string) => {
+      if (!transactions[txid] && !txid) return <div>No transaction found</div>;
+      return (
+        <MempoolTx
+          txid={transactions[txid] ? undefined : txid}
+          transactionLabel={transactionLabel}
+          transactionDetails={transactions[txid]}
+          isMintTransaction={isMintTransaction}
+        />
+      );
     },
     [transactions]
   );
