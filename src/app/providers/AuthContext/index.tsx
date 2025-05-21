@@ -64,7 +64,18 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
         const idToken = await auth.currentUser?.getIdToken(true);
 
         if (idToken) {
-          await signIn('credentials', { redirect: false, idToken, ordinalsAddress: address });
+          const signInResults = await signIn('credentials', {
+            redirect: false,
+            idToken,
+            ordinalsAddress: address,
+            signature
+          });
+
+          if (signInResults?.error) {
+            console.error('Error signing in with next-auth:', signInResults.error);
+            throw new Error('Failed to sign in with next-auth');
+          }
+
           return true;
         }
       } catch (error) {
