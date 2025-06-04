@@ -33,7 +33,7 @@ export default function Home() {
           </p>
           <p className='text-md'>
             **Themed with{' '}
-            <Link className='hover-blue0' href='https://ui.shadcn.com/' target='_blank'>
+            <Link className='hover-blue' href='https://ui.shadcn.com/' target='_blank'>
               ShadCN
             </Link>{' '}
             and{' '}

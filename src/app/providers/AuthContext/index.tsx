@@ -2,11 +2,12 @@
 
 import { useLaserEyes } from '@omnisat/lasereyes';
 import { User, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
+import { DateTime } from 'luxon';
 import { signIn, signOut } from 'next-auth/react';
-import { ReactNode, createContext, useEffect, useMemo, useRef, useState } from 'react';
+import { ReactNode, createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { AUTHENTICATED_ROUTES, WALLET_SIGN_IN_MESSAGE } from '@/lib/constants';
+import { APP_NAME, AUTHENTICATED_ROUTES, ONE_MINUTE } from '@/lib/constants';
 import { auth } from '@/lib/firebase';
 
 import { IAuthContext } from './auth.types';
@@ -19,6 +20,9 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
   const listeners = useRef<(() => void)[]>([]);
 
   const [loading, setLoading] = useState<boolean>(true);
+
+  const [signInMessage, setSignInMessage] = useState<string | null>(null);
+
   const isAuthenticated = useMemo(() => (auth?.currentUser && connected ? true : false), [auth.currentUser, connected]);
 
   const logOut = () => {
@@ -28,7 +32,9 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
         listeners.current.forEach((unsubscribe) => unsubscribe());
         listeners.current = [];
 
+        // local purge
         setLoading(false);
+        setSignInMessage(null);
 
         disconnect();
 
@@ -41,14 +47,14 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
       });
   };
 
-  const signIntoFirebase = async (address: string, signature: string) => {
+  const signIntoFirebase = async (address: string, signature: string, message: string) => {
     try {
       const response = await fetch('/api/auth/customToken', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ address, signature })
+        body: JSON.stringify({ address, signature, message })
       });
 
       if (!response.ok) {
@@ -68,7 +74,8 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
             redirect: false,
             idToken,
             ordinalsAddress: address,
-            signature
+            signature,
+            message
           });
 
           if (signInResults?.error) {
@@ -93,19 +100,33 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
 
     if (!connected) {
       return logOut();
-    }
+    } else {
+      // Initialize a message to sign for the execution of this useEffect
+      const messageToSign: string = signInMessage || getSignInMessage();
+      // If the message is not set, set a new message
+      if (!signInMessage) {
+        setSignInMessage(messageToSign);
+      } else {
+        // If the message is set, then check if it's older than 1 minute
+        const now = DateTime.now().toMillis();
+        const timeInCurrentMessage = signInMessage.split(':')[1];
+        // If the message is older than 1 minutes, set a new message
+        if (now - Number(timeInCurrentMessage) > ONE_MINUTE.toMillis()) {
+          setSignInMessage(messageToSign);
+        }
+        // otherwise, the current message is still valid. Continue execution.
+      }
 
-    if (connected) {
-      if (!auth.currentUser) {
+      if (!auth.currentUser && !loading) {
         setLoading(true);
         const signMessageForFirebase = async () => {
           try {
-            const signedMessage = await signMessage(WALLET_SIGN_IN_MESSAGE, address);
+            const signedMessage = await signMessage(messageToSign, address);
             if (!signedMessage) {
               logOut();
               return toast.error('Failed to sign message');
             }
-            const signInResult = await signIntoFirebase(address, signedMessage);
+            const signInResult = await signIntoFirebase(address, signedMessage, messageToSign);
 
             if (!signInResult) {
               logOut();
@@ -148,6 +169,24 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, authStateChanged);
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    // Subscribe to Firebase Auth state changes
+    const unsubscribeAuth = onAuthStateChanged(auth, authStateChanged);
+
+    return () => {
+      // Unsubscribe from Firebase Auth listener
+      unsubscribeAuth();
+
+      // Unsubscribe from all Firestore listeners
+      listeners.current.forEach((unsubscribe) => unsubscribe());
+      listeners.current = []; // Reset the list
+    };
+  }, []);
+
+  const getSignInMessage = useCallback(() => {
+    return `Sign into ${APP_NAME}:${DateTime.now().toMillis()}`;
   }, []);
 
   return (

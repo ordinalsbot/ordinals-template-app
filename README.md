@@ -3,9 +3,16 @@
 
 This repository is a boilerplate codebase for building a frontend application that interfaces with the Bitcoin Ordinals ecosystem. Out of the box, this application comes with the following technologies.
 
-The application uses Firebase as a SSO and Database resource. After successfully adding Firebase configurations to the project, users will receive an Anonymous account by signing a message with their sats-connect wallet.
+- Firebase (Web2: Account, DB, Cloud Functions)
+- LaserEyes (Web3: Bitcoin Wallet Provider)
+- NextJS, Tanstack (TS Framework & Tools)
+- Luxon: (Dates)
+- ShadUI & Tailwind: (UI/UX)
+- Zustand: (State & Persistence)
 
-In the background, this repository implements Next-Auth with sessions, creating a `customAuthenticationToken` with the use of the Firebase admin SDK.
+The application uses Firebase as a SSO and Database resource. After successfully adding Firebase configurations to the project, users will receive an Anonymous account by signing a message with their preferred bitcoin wallet.
+
+In the background, this repository implements Next-Auth with sessions, creating a `customToken` with the use of the Firebase admin SDK.
 
 ## Table of contents
 
@@ -21,7 +28,7 @@ In the background, this repository implements Next-Auth with sessions, creating 
 
 ### NextJS Functionality
 
-NextJS 14 comes built-in with a number of handy features for handling a wide range of common scenarios for your app, such as the throwing of an error and the structuring of your page metadata across your site.
+NextJS 15 comes built-in with a number of handy features for handling a wide range of common scenarios for your app, such as the throwing of an error and the structuring of your page metadata across your site.
 
 #### Error Pages
 
@@ -209,7 +216,7 @@ This will download a `service_account.json` file, in which you will find the str
 
 ## Deployment
 
-The template app may be deployed anywhere a NextJS is supported. Many NextJS developers naturally choose [Vercel](https://vercel.com/) to host the application as they are the core developer behind NextJS.
+The template app may be deployed anywhere NextJS is supported. Many NextJS developers naturally choose [Vercel](https://vercel.com/) to host the application as they are the core developer behind NextJS.
 
 To deploy the application on Vercel, follow these steps.
 
