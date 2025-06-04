@@ -47,7 +47,7 @@ export default function Inscribe() {
     queryKey: ['order', order?.id],
     enabled: !!order,
     staleTime: ONE_SECOND.toMillis() * 5,
-    // The refetch interval is based on whether or not we have the charge address. If we do, then we can poll every 20 seconds, instead of every 5
+    // The refetch interval is based on whether or not we have the charge address. If we do, then we can poll every 3 seconds, instead of every 5
     refetchInterval: () => {
       if (order?.charge.address) return ONE_MINUTE.toMillis() / 3;
       return ONE_SECOND.toMillis() * 5;
@@ -59,7 +59,7 @@ export default function Inscribe() {
     isLoading: feeRateLoading,
     error: feeRateError
   } = useQuery({
-    queryFn: async () => fetch('/api/feeRate').then((res) => res.json()),
+    queryFn: async () => fetch('/api/fee-rate').then((res) => res.json()),
     queryKey: ['feeRate']
   });
 
