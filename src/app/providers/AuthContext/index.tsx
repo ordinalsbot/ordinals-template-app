@@ -186,7 +186,7 @@ const AuthContextProvider = ({ children }: { children: NonNullable<ReactNode> })
   }, []);
 
   const getSignInMessage = useCallback(() => {
-    return `Sign into ${APP_NAME} Application:${DateTime.now().toMillis()}`;
+    return `Sign into ${APP_NAME}:${DateTime.now().toMillis()}`;
   }, []);
 
   return (
