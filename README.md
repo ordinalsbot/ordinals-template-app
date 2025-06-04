@@ -134,8 +134,10 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=""
 NEXTAUTH_SECRET=""
 NEXTAUTH_URL=http://localhost:3000/
 
-ORDINALSBOT_API_KEY=""
-EXPLORER_URL="https://explorer.ordinalsbot.com"
+NEXT_PUBLIC_ORDINALSBOT_EXPLORER_URL="https://explorer.ordinalsbot.com"
+NEXT_PUBLIC_API_URL="https://api.ordinalsbot.com"
+NEXT_PUBLIC_NETWORK="mainnet"
+ORDINALSBOT_PUBLIC_API_KEY=""
 ```
 
 ### Run
