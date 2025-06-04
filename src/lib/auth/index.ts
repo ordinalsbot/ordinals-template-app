@@ -77,8 +77,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials || !credentials.ordinalsAddress || !credentials.signature) throw new Error('Invalid Credentials');
-
-        const { message } = credentials;
+        const { message, ordinalsAddress, signature, idToken } = credentials;
 
         const now = DateTime.now().toMillis();
 
@@ -87,9 +86,8 @@ export const authOptions: NextAuthOptions = {
         if (now - Number(timeInMessage) > ONE_MINUTE.toMillis()) throw new Error('Message expired');
 
         try {
-          if (!Verifier.verifySignature(credentials.ordinalsAddress, message, credentials.signature))
-            throw new Error('Invalid Signature');
-          const token = await admin.auth().verifyIdToken(credentials.idToken);
+          if (!Verifier.verifySignature(ordinalsAddress, message, signature)) throw new Error('Invalid Signature');
+          const token = await admin.auth().verifyIdToken(idToken);
 
           const user = {
             id: token.uid,
