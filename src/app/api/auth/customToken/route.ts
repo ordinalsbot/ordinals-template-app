@@ -1,17 +1,16 @@
 import { Verifier } from 'bip322-js';
 
 import admin from '@/app/api/firebase';
-import { WALLET_SIGN_IN_MESSAGE } from '@/lib/constants';
 
 export async function POST(req: Request) {
   try {
-    const { address, signature } = await req.json();
+    const { address, signature, message } = await req.json();
     // verifySignature requires that the entire signature object be passed to it
-    const signedResult = Verifier.verifySignature(address, WALLET_SIGN_IN_MESSAGE, signature);
+    const signedResult = Verifier.verifySignature(address, message, signature);
 
     if (signedResult) {
       const customToken = await admin.auth().createCustomToken(encodeBitcoinAddressToBase64(address));
-      return Response.json({ customToken, address, signature });
+      return Response.json({ customToken, address, signature, message });
     } else {
       throw new Error('Invalid signature');
     }

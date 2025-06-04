@@ -1,11 +1,12 @@
 import { Verifier } from 'bip322-js';
+import { DateTime } from 'luxon';
 import { NextAuthOptions, Session, User } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { StringifyOptions } from 'querystring';
 
 import admin from '@/app/api/firebase';
 
-import { SESSION_TOKEN_NAME, WALLET_SIGN_IN_MESSAGE } from '../constants';
+import { ONE_MINUTE, SESSION_TOKEN_NAME } from '../constants';
 
 export interface ICustomSession extends Session {
   user: {
@@ -68,14 +69,25 @@ export const authOptions: NextAuthOptions = {
         signature: {
           label: 'Signed Message using wallet',
           type: 'text'
+        },
+        message: {
+          label: 'Message to sign for authentication',
+          type: 'text'
         }
       },
       async authorize(credentials) {
-        if (!credentials || !credentials.idToken || !credentials.ordinalsAddress || !credentials.signature) {
-          throw new Error('Invalid Credentials');
-        }
+        if (!credentials || !credentials.ordinalsAddress || !credentials.signature) throw new Error('Invalid Credentials');
+
+        const { message } = credentials;
+
+        const now = DateTime.now().toMillis();
+
+        const timeInMessage = message.split(':')[1];
+
+        if (now - Number(timeInMessage) > ONE_MINUTE.toMillis()) throw new Error('Message expired');
+
         try {
-          if (!Verifier.verifySignature(credentials.ordinalsAddress, WALLET_SIGN_IN_MESSAGE, credentials.signature))
+          if (!Verifier.verifySignature(credentials.ordinalsAddress, message, credentials.signature))
             throw new Error('Invalid Signature');
           const token = await admin.auth().verifyIdToken(credentials.idToken);
 
