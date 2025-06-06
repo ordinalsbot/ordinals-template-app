@@ -1,6 +1,7 @@
 import { getServerSession } from 'next-auth';
 import Image from 'next/image';
 
+import { Container, Section } from '@/components/common';
 import { ICustomSession, authOptions } from '@/lib/auth';
 import { FIREBASE, ORDINALSBOT_EXPLORER_URL } from '@/lib/constants';
 import apiClient from '@/lib/utilities/apiClient';
@@ -27,23 +28,25 @@ export default async function Page() {
   }
 
   return (
-    <div className='flex min-h-screen flex-col items-center justify-center py-2'>
-      <h1 className='mb-4 text-4xl font-bold'>
-        Welcome to the Firebase
-        <Image src={FIREBASE} alt='firebase-logo' width={50} height={50} className='inline' /> Authenticated Dashboard
-      </h1>
-      {inscriptions?.inscriptions && Array.isArray(inscriptions?.inscriptions) && (
-        <>
-          <h2 className='mb-4 text-2xl font-semibold'>Your Inscriptions: {inscriptions?.inscriptions?.length ?? 0}</h2>
-          <div className='max-h-96 overflow-auto'>
-            {inscriptions?.inscriptions.map((inscription: string) => (
-              <div key={inscription} className='mb-4 rounded border p-4 shadow'>
-                <h2 className='text-sm font-semibold'>{inscription}</h2>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
+    <Section className='m-auto flex flex-col items-center justify-center'>
+      <Container>
+        <h1 className='mb-4 text-4xl font-bold'>
+          Welcome to the Firebase
+          <Image src={FIREBASE} alt='firebase-logo' width={50} height={50} className='inline' /> Authenticated Dashboard
+        </h1>
+        {inscriptions?.inscriptions && Array.isArray(inscriptions?.inscriptions) && (
+          <>
+            <h2 className='mb-4 text-2xl font-semibold'>Your Inscriptions: {inscriptions?.inscriptions?.length ?? 0}</h2>
+            <div className='max-h-96 overflow-auto'>
+              {inscriptions?.inscriptions.map((inscription: string) => (
+                <div key={inscription} className='mb-4 rounded border p-4 shadow'>
+                  <h2 className='text-sm font-semibold'>{inscription}</h2>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </Container>
+    </Section>
   );
 }

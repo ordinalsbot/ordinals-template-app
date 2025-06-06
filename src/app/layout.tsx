@@ -28,9 +28,9 @@ export default async function RootLayout({
       <body className={font.className}>
         <Providers session={session}>
           <Header />
-          {children}
+          <main className='flex h-full min-h-0 flex-1 flex-col'>{children}</main>
           <Footer />
-          <Toaster richColors />
+          <Toaster richColors position='top-right' closeButton />
         </Providers>
       </body>
     </html>

@@ -73,3 +73,9 @@
 .hover-blue {
   @apply hover:text-sky-500;
 }
+
+html,
+body,
+:root {
+  height: 100%;
+}

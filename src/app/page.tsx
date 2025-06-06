@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Container } from '@/components/common/Container';
+import { Container, Section } from '@/components/common';
 import { BTC, DEFAULT_DIMENSIONS, DEFAULT_METADATA } from '@/lib/constants';
 
 export const metadata: Metadata = DEFAULT_METADATA;
@@ -10,7 +10,7 @@ export const metadata: Metadata = DEFAULT_METADATA;
 export default function Home() {
   const { width, height } = DEFAULT_DIMENSIONS;
   return (
-    <div className='min-h-screen gap-3 py-2'>
+    <Section padding={false}>
       <Container>
         <div className='text-4l flex h-[80vh] flex-col items-center justify-center'>
           <h1 className='mb-4 text-4xl font-bold'>
@@ -51,6 +51,6 @@ export default function Home() {
           </p>
         </div>
       </Container>
-    </div>
+    </Section>
   );
 }

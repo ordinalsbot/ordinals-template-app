@@ -13,6 +13,7 @@ import * as v from 'valibot';
 import { AuthContext } from '@/app/providers/AuthContext';
 import Charge from '@/components/Charge';
 import Order from '@/components/Order';
+import { Container, Section } from '@/components/common';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { EXPLORER_URL, LOW_POSTAGE, MEMPOOL_URL, ONE_MINUTE, ONE_SECOND } from '@/lib/constants';
@@ -128,86 +129,90 @@ export default function Inscribe() {
   });
 
   return (
-    <div className='flex w-full flex-row flex-wrap justify-center gap-5 px-10 pt-10'>
-      <div className='flex h-48 w-2/3 flex-col justify-between gap-5'>
-        <h2 className='text-2xl'>Inscribe a File</h2>
-        <form
-          className='flex flex-col'
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            form.handleSubmit();
-          }}
-        >
-          <form.Field
-            name='file'
-            children={(field) => {
-              const { name } = field;
-              return (
-                <div className='flex flex-row items-center justify-between gap-2'>
-                  <label className='uppercase' htmlFor={name}>
-                    {name}
-                  </label>
-                  <Input
-                    className='font-black ring-1'
-                    type='file'
-                    id={name}
-                    name={name}
-                    onChange={(e) => {
-                      //@ts-ignore
-                      form.setFieldValue(name, e?.target?.files?.[0]);
-                    }}
-                  />
-                </div>
-              );
-            }}
-          />
+    <Section className='flex flex-col items-start justify-center'>
+      <Container>
+        <div className='flex w-full flex-row flex-wrap justify-center gap-5 px-10 pt-10'>
+          <div className='flex h-48 w-2/3 flex-col justify-between gap-5'>
+            <h2 className='text-2xl'>Inscribe a File</h2>
+            <form
+              className='flex flex-col'
+              onSubmit={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                form.handleSubmit();
+              }}
+            >
+              <form.Field
+                name='file'
+                children={(field) => {
+                  const { name } = field;
+                  return (
+                    <div className='flex flex-row items-center justify-between gap-2'>
+                      <label className='uppercase' htmlFor={name}>
+                        {name}
+                      </label>
+                      <Input
+                        className='font-black ring-1'
+                        type='file'
+                        id={name}
+                        name={name}
+                        onChange={(e) => {
+                          //@ts-ignore
+                          form.setFieldValue(name, e?.target?.files?.[0]);
+                        }}
+                      />
+                    </div>
+                  );
+                }}
+              />
 
-          <div className='mt-5 flex flex-row justify-end'>
-            <Button type='submit' disabled={loading || feeRateLoading}>
-              Inscribe {loading && <LoaderPinwheel className='animate-spin' />}
-            </Button>
-          </div>
-        </form>
-      </div>
-
-      <div className='w-1/3'>
-        <Order loading={isLoading} order={order} />
-      </div>
-
-      <div className='w-1/3'>
-        <Charge loading={isLoading} charge={order?.charge} feeRate={feeRate} />
-      </div>
-
-      {order?.state && [InscriptionOrderState.QUEUED, InscriptionOrderState.COMPLETED].includes(order.state) && (
-        <div className='w-2/3'>
-          <h3 className='text-2xl'>Inscription Status</h3>
-          {order?.files?.map((file: InscriptionFile, index: number) => {
-            return (
-              <div
-                className='flex h-12 flex-row items-center justify-between rounded-sm border-2 border-solid border-neutral-500 px-5'
-                key={index}
-              >
-                <div className='flex-1'>{index + 1}</div>
-                <div className='flex-1'>{file.name}</div>
-                <div className='flex-1'>{file.status}</div>
-                <div className='2 flex flex-col'>
-                  <div className='text-sm'>
-                    <a href={`${EXPLORER_URL}/${file.inscriptionId}`} target='_blank'>
-                      {file.inscriptionId}
-                    </a>
-                  </div>
-                  <div className='text-xs'>
-                    <a href={`${MEMPOOL_URL}/tx/${file.sent}`} target='_blank'>
-                      {file.sent}
-                    </a>
-                  </div>
-                </div>
+              <div className='mt-5 flex flex-row justify-end'>
+                <Button type='submit' disabled={loading || feeRateLoading}>
+                  Inscribe {loading && <LoaderPinwheel className='animate-spin' />}
+                </Button>
               </div>
-            );
-          })}
+            </form>
+          </div>
+
+          <div className='w-1/3'>
+            <Order loading={isLoading} order={order} />
+          </div>
+
+          <div className='w-1/3'>
+            <Charge loading={isLoading} charge={order?.charge} feeRate={feeRate} />
+          </div>
+
+          {order?.state && [InscriptionOrderState.QUEUED, InscriptionOrderState.COMPLETED].includes(order.state) && (
+            <div className='w-2/3'>
+              <h3 className='text-2xl'>Inscription Status</h3>
+              {order?.files?.map((file: InscriptionFile, index: number) => {
+                return (
+                  <div
+                    className='flex h-12 flex-row items-center justify-between rounded-sm border-2 border-solid border-neutral-500 px-5'
+                    key={index}
+                  >
+                    <div className='flex-1'>{index + 1}</div>
+                    <div className='flex-1'>{file.name}</div>
+                    <div className='flex-1'>{file.status}</div>
+                    <div className='2 flex flex-col'>
+                      <div className='text-sm'>
+                        <a href={`${EXPLORER_URL}/${file.inscriptionId}`} target='_blank'>
+                          {file.inscriptionId}
+                        </a>
+                      </div>
+                      <div className='text-xs'>
+                        <a href={`${MEMPOOL_URL}/tx/${file.sent}`} target='_blank'>
+                          {file.sent}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </Container>
+    </Section>
   );
 }
